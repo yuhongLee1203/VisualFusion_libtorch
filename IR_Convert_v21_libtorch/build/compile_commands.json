@@ -1,0 +1,7 @@
+[
+{
+  "directory": "/home/hkai/example/IR_Convert_v21_libtorch/build",
+  "command": "/usr/bin/c++ -DUSE_C10D_GLOO -DUSE_C10D_NCCL -DUSE_DISTRIBUTED -DUSE_RPC -DUSE_TENSORPIPE -D_GLIBCXX_USE_CXX11_ABI=1 -I/home/hkai/example/IR_Convert_v21_libtorch/nlohmann -I/home/hkai/example/IR_Convert_v21_libtorch/utils/include -I/home/hkai/example/IR_Convert_v21_libtorch/lib_image_fusion/include -isystem /usr/include/opencv4 -isystem /home/hkai/envs/libtorch_1.10.0_cu113/include -isystem /home/hkai/envs/libtorch_1.10.0_cu113/include/torch/csrc/api/include -g -D_GLIBCXX_USE_CXX11_ABI=1 -o CMakeFiles/out.dir/main.cpp.o -c /home/hkai/example/IR_Convert_v21_libtorch/main.cpp",
+  "file": "/home/hkai/example/IR_Convert_v21_libtorch/main.cpp"
+}
+]

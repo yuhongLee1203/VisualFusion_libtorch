@@ -1,0 +1,43 @@
+{
+    "input_dir": "/home/hkai/example/videos/building pic/",
+    "output_dir": "./output/area4_global_local/",
+    "output": true,
+
+    "device": "cuda",
+    "pred_mode": "fp32",
+    "model_path": "/home/hkai/example/IR_Convert_v20_libtorch/model/SemLA_jit_cuda.zip",
+    
+    "output_width": 320,
+    "output_height": 240,
+
+    "pred_width": 320,
+    "pred_height": 240,
+
+    "fusion_shadow": false,
+    "fusion_edge_border": 1,
+    "fusion_threshold_equalization": 128,
+    "fusion_threshold_equalization_low": 72,
+    "fusion_threshold_equalization_high": 192,
+    "fusion_threshold_equalization_zero": 64,
+
+    "perspective_check": true,
+    "perspective_distance": 10,
+    "perspective_accuracy": 0.85,
+
+    "align_distance_last": 15.0,
+    "align_distance_line": 10.0,
+    "align_angle_mean": 10.0,
+    "align_angle_sort": 0.7,
+
+    "skip_frames":{
+        "20231117_140552_523_IR": 95,
+        "20231117_140617_461_IR": 68,
+        "20231117_140723_990_IR": 72,
+        "20231117_140746_894_IR": 68,
+        "20231117_140758_655_IR": 68,
+        "20231117_140815_118_IR": 67.5,
+        "20231117_140857_164_IR": 66,
+        "20231117_140917_210_IR": 68,
+        "20231117_140934_116_IR": 66
+    }
+}

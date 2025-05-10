@@ -1,0 +1,3 @@
+/home/hkai/example/IR_Convert_v21_libtorch/build/CMakeFiles/out.dir
+/home/hkai/example/IR_Convert_v21_libtorch/build/CMakeFiles/edit_cache.dir
+/home/hkai/example/IR_Convert_v21_libtorch/build/CMakeFiles/rebuild_cache.dir
