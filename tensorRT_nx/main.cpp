@@ -565,7 +565,7 @@ int main(int argc, char **argv)
 
 
     // CPU 版本的 fusion (僅在不使用 TRT 時才用)
-    core::ImageFusion::ptr image_fusion = nullptr;
+    // core::ImageFusion::ptr image_fusion = nullptr;
     
     // TensorRT 版本的 fusion
     std::unique_ptr<core::ImageFusionTRT> image_fusion_trt;
@@ -588,15 +588,7 @@ int main(int argc, char **argv)
       trt_fusion_available = true;
       std::cout << "[INFO] Using TensorRT GPU fusion" << std::endl;
     } else {
-      // 使用 CPU 融合
-      image_fusion = core::ImageFusion::create_instance(
-          core::ImageFusion::Param()
-              .set_shadow(fusion_shadow)
-              .set_edge_border(fusion_edge_border)
-              .set_threshold_equalization_high(fusion_threshold_equalization_high)
-              .set_threshold_equalization_low(fusion_threshold_equalization_low)
-              .set_threshold_equalization_zero(fusion_threshold_equalization_zero));
-      std::cout << "[INFO] Using CPU fusion" << std::endl;
+      std::cout << "[INFO] Not using TensorRT fusion" << std::endl;
     }
 
 
@@ -756,17 +748,7 @@ int main(int argc, char **argv)
           } else {
             img_combined = fused_small;
           }
-        } else {
-          // 使用 CPU 融合
-          // 邊緣檢測
-          cv::Mat edge = image_fusion->edge(gray_eo);
-          // warp edge
-          cv::Mat edge_warped = edge.clone();
-          if (!M.empty() && cv::determinant(M) > 1e-6) {
-            cv::warpPerspective(edge, edge_warped, M, cv::Size(out_w, out_h), interp);
-          }
-          img_combined = image_fusion->fusion(edge_warped, ir_resized);
-        }
+        } 
         // 準備原始影像
         cv::Mat img_ir_original_pic = ir_resized.clone();
         cv::Mat img_eo_original_pic = eo_resized.clone();
@@ -1037,25 +1019,6 @@ int main(int argc, char **argv)
         }
         
         timer_fusion.stop();
-      } else {
-        // 使用 CPU 融合
-        {
-          timer_edge.start();
-          edge = image_fusion->edge(gray_eo);
-          timer_edge.stop();
-        }
-        // 將EO影像轉換到IR的座標系統，如果有有效的homography矩陣
-        Mat edge_warped = edge.clone();
-        if (!M.empty() && cv::determinant(M) > 1e-6) {
-          timer_perspective.start();
-          cv::warpPerspective(edge, edge_warped, M, cv::Size(out_w, out_h), interp);
-          timer_perspective.stop();
-        }
-        {
-          timer_fusion.start();
-          img_combined = image_fusion->fusion(edge_warped, img_ir);
-          timer_fusion.stop();
-        }
       }
       timer_base.stop();
       

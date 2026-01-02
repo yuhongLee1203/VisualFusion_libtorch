@@ -43,10 +43,7 @@ include_directories(${ONNXRUNTIME_ROOT_PATH}/include)
 
 add_executable(out main.cpp
     ${PROJECT_SOURCE_DIR}/lib_image_fusion/src/core_image_align_tensorrt.cpp
-    ${PROJECT_SOURCE_DIR}/lib_image_fusion/src/core_image_to_gray.cpp
-    ${PROJECT_SOURCE_DIR}/lib_image_fusion/src/core_image_resizer.cpp
-    ${PROJECT_SOURCE_DIR}/lib_image_fusion/src/core_image_fusion.cpp
-    ${PROJECT_SOURCE_DIR}/lib_image_fusion/src/core_image_perspective.cpp
+    ${PROJECT_SOURCE_DIR}/lib_image_fusion/src/core_image_fusion_trt.cpp
     ${PROJECT_SOURCE_DIR}/utils/src/util_timer.cpp
 )
 target_link_libraries(out
