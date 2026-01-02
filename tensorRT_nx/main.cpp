@@ -1,20 +1,13 @@
-#include <ratio>
-#include <chrono>
 #include <string>
 #include <fstream>
 #include <iostream>
-#include <pthread.h>
 #include <filesystem>
 #include <cmath>
 #include <limits>
 #include <opencv2/opencv.hpp>
 #include <opencv2/calib3d.hpp>  // ADDED: 確保包含homography相關函數
 
-#include "lib_image_fusion/include/core_image_to_gray.h"
-#include "lib_image_fusion/include/core_image_resizer.h"
-#include "lib_image_fusion/include/core_image_fusion.h"
 #include "lib_image_fusion/include/core_image_fusion_trt.h"  // TensorRT 融合模組
-#include "lib_image_fusion/include/core_image_perspective.h"
 #include "lib_image_fusion/include/core_image_align_tensorrt.h"
 #include "utils/include/util_timer.h"
 #include "nlohmann/json.hpp"
@@ -100,21 +93,21 @@ inline void init_config(nlohmann::json &config)
 }
 
 cv::Mat cropImage(const cv::Mat& sourcePic, int x, int y, int w, int h) {
-    // 邊界檢查，確保不超出原圖
-    int crop_x = std::max(0, x);
-    int crop_y = std::max(0, y);
-    int crop_w = w;
-    int crop_h = h;
-    if (w < 0) {
-        crop_w = sourcePic.cols - crop_x;
-    }
-    if (h < 0) {
-        crop_h = sourcePic.rows - crop_y;
-    }
-    crop_w = std::min(crop_w, sourcePic.cols - crop_x);
-    crop_h = std::min(crop_h, sourcePic.rows - crop_y);
-    cv::Rect roi(crop_x, crop_y, crop_w, crop_h);
-    return sourcePic(roi).clone();
+  // 邊界檢查，確保不超出原圖
+  int crop_x = std::max(0, x);
+  int crop_y = std::max(0, y);
+  int crop_w = w;
+  int crop_h = h;
+  if (w < 0) {
+      crop_w = sourcePic.cols - crop_x;
+  }
+  if (h < 0) {
+      crop_h = sourcePic.rows - crop_y;
+  }
+  crop_w = std::min(crop_w, sourcePic.cols - crop_x);
+  crop_h = std::min(crop_h, sourcePic.rows - crop_y);
+  cv::Rect roi(crop_x, crop_y, crop_w, crop_h);
+  return sourcePic(roi).clone();
 }
 
 // get pair file
@@ -570,13 +563,6 @@ int main(int argc, char **argv)
       ir_w = ir.cols, ir_h = ir.rows;
     }
 
-    // Create instance
-    auto image_gray = core::ImageToGray::create_instance(core::ImageToGray::Param());
-
-    auto image_resizer = core::ImageResizer::create_instance(
-        core::ImageResizer::Param()
-            .set_eo(out_w, out_h)
-            .set_ir(out_w, out_h));
 
     // CPU 版本的 fusion (僅在不使用 TRT 時才用)
     core::ImageFusion::ptr image_fusion = nullptr;
@@ -613,9 +599,6 @@ int main(int argc, char **argv)
       std::cout << "[INFO] Using CPU fusion" << std::endl;
     }
 
-    auto image_perspective = core::ImagePerspective::create_instance(
-        core::ImagePerspective::Param()
-            .set_check(perspective_check, perspective_accuracy, perspective_distance));
 
     // =============== 選擇版本：註解掉不需要的版本 ===============
     // 版本 3: TensorRT 版本
