@@ -53,10 +53,10 @@ RM = /usr/local/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /circ330/forgithub/VisualFusion_libtorch/tensorRT_nx
+CMAKE_SOURCE_DIR = /circ330/forgithub/newVerVF/VisualFusion_libtorch/tensorRT_nx
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /circ330/forgithub/VisualFusion_libtorch/tensorRT_nx/build
+CMAKE_BINARY_DIR = /circ330/forgithub/newVerVF/VisualFusion_libtorch/tensorRT_nx/build
 
 # Include any dependencies generated for this target.
 include CMakeFiles/out.dir/depend.make
@@ -70,129 +70,36 @@ include CMakeFiles/out.dir/progress.make
 include CMakeFiles/out.dir/flags.make
 
 CMakeFiles/out.dir/main.cpp.o: CMakeFiles/out.dir/flags.make
-CMakeFiles/out.dir/main.cpp.o: /circ330/forgithub/VisualFusion_libtorch/tensorRT_nx/main.cpp
+CMakeFiles/out.dir/main.cpp.o: /circ330/forgithub/newVerVF/VisualFusion_libtorch/tensorRT_nx/main.cpp
 CMakeFiles/out.dir/main.cpp.o: CMakeFiles/out.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/circ330/forgithub/VisualFusion_libtorch/tensorRT_nx/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/out.dir/main.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/out.dir/main.cpp.o -MF CMakeFiles/out.dir/main.cpp.o.d -o CMakeFiles/out.dir/main.cpp.o -c /circ330/forgithub/VisualFusion_libtorch/tensorRT_nx/main.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/circ330/forgithub/newVerVF/VisualFusion_libtorch/tensorRT_nx/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/out.dir/main.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/out.dir/main.cpp.o -MF CMakeFiles/out.dir/main.cpp.o.d -o CMakeFiles/out.dir/main.cpp.o -c /circ330/forgithub/newVerVF/VisualFusion_libtorch/tensorRT_nx/main.cpp
 
 CMakeFiles/out.dir/main.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/out.dir/main.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /circ330/forgithub/VisualFusion_libtorch/tensorRT_nx/main.cpp > CMakeFiles/out.dir/main.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /circ330/forgithub/newVerVF/VisualFusion_libtorch/tensorRT_nx/main.cpp > CMakeFiles/out.dir/main.cpp.i
 
 CMakeFiles/out.dir/main.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/out.dir/main.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /circ330/forgithub/VisualFusion_libtorch/tensorRT_nx/main.cpp -o CMakeFiles/out.dir/main.cpp.s
-
-CMakeFiles/out.dir/lib_image_fusion/src/core_image_align_tensorrt.cpp.o: CMakeFiles/out.dir/flags.make
-CMakeFiles/out.dir/lib_image_fusion/src/core_image_align_tensorrt.cpp.o: /circ330/forgithub/VisualFusion_libtorch/tensorRT_nx/lib_image_fusion/src/core_image_align_tensorrt.cpp
-CMakeFiles/out.dir/lib_image_fusion/src/core_image_align_tensorrt.cpp.o: CMakeFiles/out.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/circ330/forgithub/VisualFusion_libtorch/tensorRT_nx/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/out.dir/lib_image_fusion/src/core_image_align_tensorrt.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/out.dir/lib_image_fusion/src/core_image_align_tensorrt.cpp.o -MF CMakeFiles/out.dir/lib_image_fusion/src/core_image_align_tensorrt.cpp.o.d -o CMakeFiles/out.dir/lib_image_fusion/src/core_image_align_tensorrt.cpp.o -c /circ330/forgithub/VisualFusion_libtorch/tensorRT_nx/lib_image_fusion/src/core_image_align_tensorrt.cpp
-
-CMakeFiles/out.dir/lib_image_fusion/src/core_image_align_tensorrt.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/out.dir/lib_image_fusion/src/core_image_align_tensorrt.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /circ330/forgithub/VisualFusion_libtorch/tensorRT_nx/lib_image_fusion/src/core_image_align_tensorrt.cpp > CMakeFiles/out.dir/lib_image_fusion/src/core_image_align_tensorrt.cpp.i
-
-CMakeFiles/out.dir/lib_image_fusion/src/core_image_align_tensorrt.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/out.dir/lib_image_fusion/src/core_image_align_tensorrt.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /circ330/forgithub/VisualFusion_libtorch/tensorRT_nx/lib_image_fusion/src/core_image_align_tensorrt.cpp -o CMakeFiles/out.dir/lib_image_fusion/src/core_image_align_tensorrt.cpp.s
-
-CMakeFiles/out.dir/lib_image_fusion/src/core_image_to_gray.cpp.o: CMakeFiles/out.dir/flags.make
-CMakeFiles/out.dir/lib_image_fusion/src/core_image_to_gray.cpp.o: /circ330/forgithub/VisualFusion_libtorch/tensorRT_nx/lib_image_fusion/src/core_image_to_gray.cpp
-CMakeFiles/out.dir/lib_image_fusion/src/core_image_to_gray.cpp.o: CMakeFiles/out.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/circ330/forgithub/VisualFusion_libtorch/tensorRT_nx/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/out.dir/lib_image_fusion/src/core_image_to_gray.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/out.dir/lib_image_fusion/src/core_image_to_gray.cpp.o -MF CMakeFiles/out.dir/lib_image_fusion/src/core_image_to_gray.cpp.o.d -o CMakeFiles/out.dir/lib_image_fusion/src/core_image_to_gray.cpp.o -c /circ330/forgithub/VisualFusion_libtorch/tensorRT_nx/lib_image_fusion/src/core_image_to_gray.cpp
-
-CMakeFiles/out.dir/lib_image_fusion/src/core_image_to_gray.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/out.dir/lib_image_fusion/src/core_image_to_gray.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /circ330/forgithub/VisualFusion_libtorch/tensorRT_nx/lib_image_fusion/src/core_image_to_gray.cpp > CMakeFiles/out.dir/lib_image_fusion/src/core_image_to_gray.cpp.i
-
-CMakeFiles/out.dir/lib_image_fusion/src/core_image_to_gray.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/out.dir/lib_image_fusion/src/core_image_to_gray.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /circ330/forgithub/VisualFusion_libtorch/tensorRT_nx/lib_image_fusion/src/core_image_to_gray.cpp -o CMakeFiles/out.dir/lib_image_fusion/src/core_image_to_gray.cpp.s
-
-CMakeFiles/out.dir/lib_image_fusion/src/core_image_resizer.cpp.o: CMakeFiles/out.dir/flags.make
-CMakeFiles/out.dir/lib_image_fusion/src/core_image_resizer.cpp.o: /circ330/forgithub/VisualFusion_libtorch/tensorRT_nx/lib_image_fusion/src/core_image_resizer.cpp
-CMakeFiles/out.dir/lib_image_fusion/src/core_image_resizer.cpp.o: CMakeFiles/out.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/circ330/forgithub/VisualFusion_libtorch/tensorRT_nx/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/out.dir/lib_image_fusion/src/core_image_resizer.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/out.dir/lib_image_fusion/src/core_image_resizer.cpp.o -MF CMakeFiles/out.dir/lib_image_fusion/src/core_image_resizer.cpp.o.d -o CMakeFiles/out.dir/lib_image_fusion/src/core_image_resizer.cpp.o -c /circ330/forgithub/VisualFusion_libtorch/tensorRT_nx/lib_image_fusion/src/core_image_resizer.cpp
-
-CMakeFiles/out.dir/lib_image_fusion/src/core_image_resizer.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/out.dir/lib_image_fusion/src/core_image_resizer.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /circ330/forgithub/VisualFusion_libtorch/tensorRT_nx/lib_image_fusion/src/core_image_resizer.cpp > CMakeFiles/out.dir/lib_image_fusion/src/core_image_resizer.cpp.i
-
-CMakeFiles/out.dir/lib_image_fusion/src/core_image_resizer.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/out.dir/lib_image_fusion/src/core_image_resizer.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /circ330/forgithub/VisualFusion_libtorch/tensorRT_nx/lib_image_fusion/src/core_image_resizer.cpp -o CMakeFiles/out.dir/lib_image_fusion/src/core_image_resizer.cpp.s
-
-CMakeFiles/out.dir/lib_image_fusion/src/core_image_fusion.cpp.o: CMakeFiles/out.dir/flags.make
-CMakeFiles/out.dir/lib_image_fusion/src/core_image_fusion.cpp.o: /circ330/forgithub/VisualFusion_libtorch/tensorRT_nx/lib_image_fusion/src/core_image_fusion.cpp
-CMakeFiles/out.dir/lib_image_fusion/src/core_image_fusion.cpp.o: CMakeFiles/out.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/circ330/forgithub/VisualFusion_libtorch/tensorRT_nx/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/out.dir/lib_image_fusion/src/core_image_fusion.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/out.dir/lib_image_fusion/src/core_image_fusion.cpp.o -MF CMakeFiles/out.dir/lib_image_fusion/src/core_image_fusion.cpp.o.d -o CMakeFiles/out.dir/lib_image_fusion/src/core_image_fusion.cpp.o -c /circ330/forgithub/VisualFusion_libtorch/tensorRT_nx/lib_image_fusion/src/core_image_fusion.cpp
-
-CMakeFiles/out.dir/lib_image_fusion/src/core_image_fusion.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/out.dir/lib_image_fusion/src/core_image_fusion.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /circ330/forgithub/VisualFusion_libtorch/tensorRT_nx/lib_image_fusion/src/core_image_fusion.cpp > CMakeFiles/out.dir/lib_image_fusion/src/core_image_fusion.cpp.i
-
-CMakeFiles/out.dir/lib_image_fusion/src/core_image_fusion.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/out.dir/lib_image_fusion/src/core_image_fusion.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /circ330/forgithub/VisualFusion_libtorch/tensorRT_nx/lib_image_fusion/src/core_image_fusion.cpp -o CMakeFiles/out.dir/lib_image_fusion/src/core_image_fusion.cpp.s
-
-CMakeFiles/out.dir/lib_image_fusion/src/core_image_perspective.cpp.o: CMakeFiles/out.dir/flags.make
-CMakeFiles/out.dir/lib_image_fusion/src/core_image_perspective.cpp.o: /circ330/forgithub/VisualFusion_libtorch/tensorRT_nx/lib_image_fusion/src/core_image_perspective.cpp
-CMakeFiles/out.dir/lib_image_fusion/src/core_image_perspective.cpp.o: CMakeFiles/out.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/circ330/forgithub/VisualFusion_libtorch/tensorRT_nx/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/out.dir/lib_image_fusion/src/core_image_perspective.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/out.dir/lib_image_fusion/src/core_image_perspective.cpp.o -MF CMakeFiles/out.dir/lib_image_fusion/src/core_image_perspective.cpp.o.d -o CMakeFiles/out.dir/lib_image_fusion/src/core_image_perspective.cpp.o -c /circ330/forgithub/VisualFusion_libtorch/tensorRT_nx/lib_image_fusion/src/core_image_perspective.cpp
-
-CMakeFiles/out.dir/lib_image_fusion/src/core_image_perspective.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/out.dir/lib_image_fusion/src/core_image_perspective.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /circ330/forgithub/VisualFusion_libtorch/tensorRT_nx/lib_image_fusion/src/core_image_perspective.cpp > CMakeFiles/out.dir/lib_image_fusion/src/core_image_perspective.cpp.i
-
-CMakeFiles/out.dir/lib_image_fusion/src/core_image_perspective.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/out.dir/lib_image_fusion/src/core_image_perspective.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /circ330/forgithub/VisualFusion_libtorch/tensorRT_nx/lib_image_fusion/src/core_image_perspective.cpp -o CMakeFiles/out.dir/lib_image_fusion/src/core_image_perspective.cpp.s
-
-CMakeFiles/out.dir/utils/src/util_timer.cpp.o: CMakeFiles/out.dir/flags.make
-CMakeFiles/out.dir/utils/src/util_timer.cpp.o: /circ330/forgithub/VisualFusion_libtorch/tensorRT_nx/utils/src/util_timer.cpp
-CMakeFiles/out.dir/utils/src/util_timer.cpp.o: CMakeFiles/out.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/circ330/forgithub/VisualFusion_libtorch/tensorRT_nx/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/out.dir/utils/src/util_timer.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/out.dir/utils/src/util_timer.cpp.o -MF CMakeFiles/out.dir/utils/src/util_timer.cpp.o.d -o CMakeFiles/out.dir/utils/src/util_timer.cpp.o -c /circ330/forgithub/VisualFusion_libtorch/tensorRT_nx/utils/src/util_timer.cpp
-
-CMakeFiles/out.dir/utils/src/util_timer.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/out.dir/utils/src/util_timer.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /circ330/forgithub/VisualFusion_libtorch/tensorRT_nx/utils/src/util_timer.cpp > CMakeFiles/out.dir/utils/src/util_timer.cpp.i
-
-CMakeFiles/out.dir/utils/src/util_timer.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/out.dir/utils/src/util_timer.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /circ330/forgithub/VisualFusion_libtorch/tensorRT_nx/utils/src/util_timer.cpp -o CMakeFiles/out.dir/utils/src/util_timer.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /circ330/forgithub/newVerVF/VisualFusion_libtorch/tensorRT_nx/main.cpp -o CMakeFiles/out.dir/main.cpp.s
 
 # Object files for target out
 out_OBJECTS = \
-"CMakeFiles/out.dir/main.cpp.o" \
-"CMakeFiles/out.dir/lib_image_fusion/src/core_image_align_tensorrt.cpp.o" \
-"CMakeFiles/out.dir/lib_image_fusion/src/core_image_to_gray.cpp.o" \
-"CMakeFiles/out.dir/lib_image_fusion/src/core_image_resizer.cpp.o" \
-"CMakeFiles/out.dir/lib_image_fusion/src/core_image_fusion.cpp.o" \
-"CMakeFiles/out.dir/lib_image_fusion/src/core_image_perspective.cpp.o" \
-"CMakeFiles/out.dir/utils/src/util_timer.cpp.o"
+"CMakeFiles/out.dir/main.cpp.o"
 
 # External object files for target out
 out_EXTERNAL_OBJECTS =
 
 out: CMakeFiles/out.dir/main.cpp.o
-out: CMakeFiles/out.dir/lib_image_fusion/src/core_image_align_tensorrt.cpp.o
-out: CMakeFiles/out.dir/lib_image_fusion/src/core_image_to_gray.cpp.o
-out: CMakeFiles/out.dir/lib_image_fusion/src/core_image_resizer.cpp.o
-out: CMakeFiles/out.dir/lib_image_fusion/src/core_image_fusion.cpp.o
-out: CMakeFiles/out.dir/lib_image_fusion/src/core_image_perspective.cpp.o
-out: CMakeFiles/out.dir/utils/src/util_timer.cpp.o
 out: CMakeFiles/out.dir/build.make
 out: /usr/lib/aarch64-linux-gnu/libopencv_highgui.so.4.5.4d
 out: /usr/lib/aarch64-linux-gnu/libopencv_calib3d.so.4.5.4d
 out: /usr/lib/aarch64-linux-gnu/libopencv_videoio.so.4.5.4d
 out: /usr/lib/aarch64-linux-gnu/libopencv_dnn.so.4.5.4d
 out: /usr/lib/aarch64-linux-gnu/libnvinfer.so
+out: /usr/lib/aarch64-linux-gnu/libnvonnxparser.so
+out: /usr/local/cuda/lib64/libcudart.so
+out: /usr/local/cuda/lib64/libcublas.so
 out: /usr/local/cuda/lib64/libcudart_static.a
 out: /usr/lib/aarch64-linux-gnu/librt.a
 out: /usr/lib/aarch64-linux-gnu/libopencv_imgcodecs.so.4.5.4d
@@ -201,7 +108,7 @@ out: /usr/lib/aarch64-linux-gnu/libopencv_flann.so.4.5.4d
 out: /usr/lib/aarch64-linux-gnu/libopencv_imgproc.so.4.5.4d
 out: /usr/lib/aarch64-linux-gnu/libopencv_core.so.4.5.4d
 out: CMakeFiles/out.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/circ330/forgithub/VisualFusion_libtorch/tensorRT_nx/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Linking CXX executable out"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/circ330/forgithub/newVerVF/VisualFusion_libtorch/tensorRT_nx/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable out"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/out.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -213,6 +120,6 @@ CMakeFiles/out.dir/clean:
 .PHONY : CMakeFiles/out.dir/clean
 
 CMakeFiles/out.dir/depend:
-	cd /circ330/forgithub/VisualFusion_libtorch/tensorRT_nx/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /circ330/forgithub/VisualFusion_libtorch/tensorRT_nx /circ330/forgithub/VisualFusion_libtorch/tensorRT_nx /circ330/forgithub/VisualFusion_libtorch/tensorRT_nx/build /circ330/forgithub/VisualFusion_libtorch/tensorRT_nx/build /circ330/forgithub/VisualFusion_libtorch/tensorRT_nx/build/CMakeFiles/out.dir/DependInfo.cmake "--color=$(COLOR)"
+	cd /circ330/forgithub/newVerVF/VisualFusion_libtorch/tensorRT_nx/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /circ330/forgithub/newVerVF/VisualFusion_libtorch/tensorRT_nx /circ330/forgithub/newVerVF/VisualFusion_libtorch/tensorRT_nx /circ330/forgithub/newVerVF/VisualFusion_libtorch/tensorRT_nx/build /circ330/forgithub/newVerVF/VisualFusion_libtorch/tensorRT_nx/build /circ330/forgithub/newVerVF/VisualFusion_libtorch/tensorRT_nx/build/CMakeFiles/out.dir/DependInfo.cmake "--color=$(COLOR)"
 .PHONY : CMakeFiles/out.dir/depend
 

@@ -114,13 +114,11 @@ include_directories(
 )
 
 # ============================================================
-# 編譯目標 (已移除未使用的 to_gray, resizer, perspective)
+# 編譯目標 - 所有來源檔案一次編譯
 # ============================================================
-add_executable(out main.cpp
-    ${PROJECT_SOURCE_DIR}/lib_image_fusion/src/core_image_align_tensorrt.cpp
-    ${PROJECT_SOURCE_DIR}/lib_image_fusion/src/core_image_fusion.cpp
-    ${PROJECT_SOURCE_DIR}/utils/src/util_timer.cpp
-)
+
+# 所有來源檔案（main.cpp 已經 include 了所有其他 .cpp 檔案）
+add_executable(out main.cpp)
 
 # ============================================================
 # 連結函式庫

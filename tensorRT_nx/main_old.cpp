@@ -13,6 +13,7 @@
 #include "lib_image_fusion/include/core_image_to_gray.h"
 #include "lib_image_fusion/include/core_image_resizer.h"
 #include "lib_image_fusion/include/core_image_fusion.h"
+#include "lib_image_fusion/include/core_image_fusion_trt.h"  // TensorRT 融合模組
 #include "lib_image_fusion/include/core_image_perspective.h"
 #include "lib_image_fusion/include/core_image_align_tensorrt.h"
 #include "utils/include/util_timer.h"
@@ -77,6 +78,8 @@ inline void init_config(nlohmann::json &config)
   config.emplace("fusion_threshold_equalization_low", 72);
   config.emplace("fusion_threshold_equalization_high", 192);
   config.emplace("fusion_threshold_equalization_zero", 64);
+  config.emplace("fusion_trt_engine", "./model/NX/image_fusion_v2_320x240_fp32.trt");  // TensorRT 融合引擎路徑
+  config.emplace("use_trt_fusion", true);  // 是否使用 TensorRT 融合
 
   config.emplace("perspective_check", true);
   config.emplace("perspective_distance", 10);
@@ -454,6 +457,8 @@ int main(int argc, char **argv)
   int fusion_threshold_equalization_low = config["fusion_threshold_equalization_low"];
   int fusion_threshold_equalization_high = config["fusion_threshold_equalization_high"];
   int fusion_threshold_equalization_zero = config["fusion_threshold_equalization_zero"];
+  std::string fusion_trt_engine = config["fusion_trt_engine"];  // TensorRT 融合引擎路徑
+  bool use_trt_fusion = config["use_trt_fusion"];  // 是否使用 TensorRT 融合
   // 新增：插值方式 
   
 
@@ -485,11 +490,13 @@ int main(int argc, char **argv)
     cout << "\tDevice: " << device << endl;
     cout << "\tPred Mode: " << pred_mode << endl;
     cout << "\tFusion Shadow: " << fusion_shadow << endl;
-    cout << "\tFusion Edge Border: " << fusion_edge_border << endl;
+    cout << "\tFusion Edge Border: " << fusion_edge_border << " (CPU only, TRT uses value from export)" << endl;
     cout << "\tFusion Threshold Equalization: " << fusion_threshold_equalization << endl;
     cout << "\tFusion Threshold Equalization Low: " << fusion_threshold_equalization_low << endl;
     cout << "\tFusion Threshold Equalization High: " << fusion_threshold_equalization_high << endl;
     cout << "\tFusion Threshold Equalization Zero: " << fusion_threshold_equalization_zero << endl;
+    cout << "\tUse TRT Fusion: " << use_trt_fusion << endl;
+    cout << "\tFusion TRT Engine: " << fusion_trt_engine << endl;
     cout << "\tPerspective Check: " << perspective_check << endl;
     cout << "\tPerspective Distance: " << perspective_distance << endl;
     cout << "\tPerspective Accuracy: " << perspective_accuracy << endl;
@@ -571,13 +578,40 @@ int main(int argc, char **argv)
             .set_eo(out_w, out_h)
             .set_ir(out_w, out_h));
 
-    auto image_fusion = core::ImageFusion::create_instance(
-        core::ImageFusion::Param()
-            .set_shadow(fusion_shadow)
-            .set_edge_border(fusion_edge_border)  // 直接在這裡設置較大的值
-            .set_threshold_equalization_high(fusion_threshold_equalization_high)
-            .set_threshold_equalization_low(fusion_threshold_equalization_low)
-            .set_threshold_equalization_zero(fusion_threshold_equalization_zero));
+    // CPU 版本的 fusion (僅在不使用 TRT 時才用)
+    core::ImageFusion::ptr image_fusion = nullptr;
+    
+    // TensorRT 版本的 fusion
+    std::unique_ptr<core::ImageFusionTRT> image_fusion_trt;
+    bool trt_fusion_available = false;
+    
+    if (use_trt_fusion) {
+      // 使用 TensorRT 融合
+      // 注意: edge_border 已經在模型導出時固定，無法動態調整
+      // 如需改變 edge_border，請重新用 export_trt_fusion.py 導出模型
+      image_fusion_trt = std::make_unique<core::ImageFusionTRT>(
+          core::ImageFusionTRT::Param()
+              .set_engine_path(fusion_trt_engine)
+              .set_size(pred_w, pred_h));
+      if (!image_fusion_trt->isInitialized()) {
+        std::cerr << "\033[1;31m[ ERROR ]\033[0m TRT Fusion initialization failed!" << std::endl;
+        std::cerr << "  Engine path: " << fusion_trt_engine << std::endl;
+        std::cerr << "  Please check if the TRT engine file exists and is valid." << std::endl;
+        return -1;  // 直接退出程式
+      }
+      trt_fusion_available = true;
+      std::cout << "[INFO] Using TensorRT GPU fusion" << std::endl;
+    } else {
+      // 使用 CPU 融合
+      image_fusion = core::ImageFusion::create_instance(
+          core::ImageFusion::Param()
+              .set_shadow(fusion_shadow)
+              .set_edge_border(fusion_edge_border)
+              .set_threshold_equalization_high(fusion_threshold_equalization_high)
+              .set_threshold_equalization_low(fusion_threshold_equalization_low)
+              .set_threshold_equalization_zero(fusion_threshold_equalization_zero));
+      std::cout << "[INFO] Using CPU fusion" << std::endl;
+    }
 
     auto image_perspective = core::ImagePerspective::create_instance(
         core::ImagePerspective::Param()
@@ -606,7 +640,7 @@ int main(int argc, char **argv)
     // 讀取影片
     Mat eo, ir;
     
-    int cnt = 0;  // 幀數計數器
+    int cnt = 15;  // 幀數計數器
     cv::Mat M;    // Homography矩陣
     Mat temp_pair = Mat::zeros(out_h, out_w * 2, CV_8UC3);  // 儲存特徵點配對圖像
     std::vector<cv::Point2i> eo_pts, ir_pts; // 保留特徵點
@@ -714,15 +748,42 @@ int main(int argc, char **argv)
         }
         eo_warped.copyTo(temp_pair(cv::Rect(out_w, 0, out_w, out_h)));
         
-        // 邊緣檢測
-        cv::Mat edge = image_fusion->edge(gray_eo);
-        // warp edge
-        cv::Mat edge_warped = edge.clone();
-        if (!M.empty() && cv::determinant(M) > 1e-6) {
-          cv::warpPerspective(edge, edge_warped, M, cv::Size(out_w, out_h), interp);
-        }
         // 融合
-        cv::Mat img_combined = image_fusion->fusion(edge_warped, ir_resized);
+        cv::Mat img_combined;
+        if (trt_fusion_available && image_fusion_trt) {
+          // 使用 TensorRT 融合 - 需要 warped 的 EO gray 和 IR color
+          cv::Mat gray_eo_warped;
+          cv::cvtColor(eo_warped, gray_eo_warped, cv::COLOR_BGR2GRAY);
+          
+          // 如果圖像大小與模型輸入不同，需要先 resize
+          cv::Mat gray_eo_for_trt, ir_for_trt;
+          if (gray_eo_warped.cols != pred_w || gray_eo_warped.rows != pred_h) {
+            cv::resize(gray_eo_warped, gray_eo_for_trt, cv::Size(pred_w, pred_h));
+            cv::resize(ir_resized, ir_for_trt, cv::Size(pred_w, pred_h));
+          } else {
+            gray_eo_for_trt = gray_eo_warped;
+            ir_for_trt = ir_resized;
+          }
+          
+          cv::Mat fused_small = image_fusion_trt->fusion(gray_eo_for_trt, ir_for_trt);
+          
+          // 如果輸出大小與目標不同，需要 resize 回來
+          if (fused_small.cols != out_w || fused_small.rows != out_h) {
+            cv::resize(fused_small, img_combined, cv::Size(out_w, out_h));
+          } else {
+            img_combined = fused_small;
+          }
+        } else {
+          // 使用 CPU 融合
+          // 邊緣檢測
+          cv::Mat edge = image_fusion->edge(gray_eo);
+          // warp edge
+          cv::Mat edge_warped = edge.clone();
+          if (!M.empty() && cv::determinant(M) > 1e-6) {
+            cv::warpPerspective(edge, edge_warped, M, cv::Size(out_w, out_h), interp);
+          }
+          img_combined = image_fusion->fusion(edge_warped, ir_resized);
+        }
         // 準備原始影像
         cv::Mat img_ir_original_pic = ir_resized.clone();
         cv::Mat img_eo_original_pic = eo_resized.clone();
@@ -962,22 +1023,56 @@ int main(int argc, char **argv)
 
       // 邊緣檢測和融合
       Mat edge, img_combined;
-      {
-        timer_edge.start();
-        edge = image_fusion->edge(gray_eo);
-        timer_edge.stop();
-      }
-      // 將EO影像轉換到IR的座標系統，如果有有效的homography矩陣
-      Mat edge_warped = edge.clone();
-      if (!M.empty() && cv::determinant(M) > 1e-6) {
-        timer_perspective.start();
-        cv::warpPerspective(edge, edge_warped, M, cv::Size(out_w, out_h), interp);
-        timer_perspective.stop();
-      }
-      {
+      
+      if (trt_fusion_available && image_fusion_trt) {
+        // 使用 TensorRT 融合
         timer_fusion.start();
-        img_combined = image_fusion->fusion(edge_warped, img_ir);
+        
+        // 先 warp EO gray 到 IR 座標系
+        Mat gray_eo_warped = gray_eo.clone();
+        if (!M.empty() && cv::determinant(M) > 1e-6) {
+          cv::warpPerspective(gray_eo, gray_eo_warped, M, cv::Size(out_w, out_h), interp);
+        }
+        
+        // 如果圖像大小與模型輸入不同，需要先 resize
+        cv::Mat gray_eo_for_trt, ir_for_trt;
+        if (gray_eo_warped.cols != pred_w || gray_eo_warped.rows != pred_h) {
+          cv::resize(gray_eo_warped, gray_eo_for_trt, cv::Size(pred_w, pred_h));
+          cv::resize(img_ir, ir_for_trt, cv::Size(pred_w, pred_h));
+        } else {
+          gray_eo_for_trt = gray_eo_warped;
+          ir_for_trt = img_ir;
+        }
+        
+        cv::Mat fused_small = image_fusion_trt->fusion(gray_eo_for_trt, ir_for_trt);
+        
+        // 如果輸出大小與目標不同，需要 resize 回來
+        if (fused_small.cols != out_w || fused_small.rows != out_h) {
+          cv::resize(fused_small, img_combined, cv::Size(out_w, out_h));
+        } else {
+          img_combined = fused_small;
+        }
+        
         timer_fusion.stop();
+      } else {
+        // 使用 CPU 融合
+        {
+          timer_edge.start();
+          edge = image_fusion->edge(gray_eo);
+          timer_edge.stop();
+        }
+        // 將EO影像轉換到IR的座標系統，如果有有效的homography矩陣
+        Mat edge_warped = edge.clone();
+        if (!M.empty() && cv::determinant(M) > 1e-6) {
+          timer_perspective.start();
+          cv::warpPerspective(edge, edge_warped, M, cv::Size(out_w, out_h), interp);
+          timer_perspective.stop();
+        }
+        {
+          timer_fusion.start();
+          img_combined = image_fusion->fusion(edge_warped, img_ir);
+          timer_fusion.stop();
+        }
       }
       timer_base.stop();
       

@@ -1,3 +1,7 @@
-/circ330/forgithub/VisualFusion_libtorch/tensorRT_nx/build/CMakeFiles/out.dir
-/circ330/forgithub/VisualFusion_libtorch/tensorRT_nx/build/CMakeFiles/edit_cache.dir
-/circ330/forgithub/VisualFusion_libtorch/tensorRT_nx/build/CMakeFiles/rebuild_cache.dir
+/circ330/forgithub/newVerVF/VisualFusion_libtorch/tensorRT_nx/build/CMakeFiles/out.dir
+/circ330/forgithub/newVerVF/VisualFusion_libtorch/tensorRT_nx/build/CMakeFiles/edit_cache.dir
+/circ330/forgithub/newVerVF/VisualFusion_libtorch/tensorRT_nx/build/CMakeFiles/rebuild_cache.dir
+/circ330/forgithub/newVerVF/VisualFusion_libtorch/tensorRT_nx/build/CMakeFiles/list_install_components.dir
+/circ330/forgithub/newVerVF/VisualFusion_libtorch/tensorRT_nx/build/CMakeFiles/install.dir
+/circ330/forgithub/newVerVF/VisualFusion_libtorch/tensorRT_nx/build/CMakeFiles/install/local.dir
+/circ330/forgithub/newVerVF/VisualFusion_libtorch/tensorRT_nx/build/CMakeFiles/install/strip.dir

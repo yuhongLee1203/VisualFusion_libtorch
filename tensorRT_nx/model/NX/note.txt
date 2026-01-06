@@ -1,4 +1,0 @@
-若認為邊線過粗或過細可以至../convert_to_libtorch/pytorch2trt_fusion_v2.py 執行python3 pytorch_fusion_v2.py export <edge_border> <height> <width>
-進行指定寬度的線條轉換至tensorrt model，輸出的模型會到tensorrt_nx/model/NX/
-接下來到config.json內修改"fusion_trt_engine"修改需要的border大小的.trt模型即可
-

@@ -57,10 +57,10 @@ RM = /usr/local/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /circ330/forgithub/VisualFusion_libtorch/tensorRT_nx
+CMAKE_SOURCE_DIR = /circ330/forgithub/newVerVF/VisualFusion_libtorch/tensorRT_nx
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /circ330/forgithub/VisualFusion_libtorch/tensorRT_nx/build
+CMAKE_BINARY_DIR = /circ330/forgithub/newVerVF/VisualFusion_libtorch/tensorRT_nx/build
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -85,11 +85,56 @@ rebuild_cache:
 rebuild_cache/fast: rebuild_cache
 .PHONY : rebuild_cache/fast
 
+# Special rule for the target list_install_components
+list_install_components:
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Available install components are: \"Unspecified\""
+.PHONY : list_install_components
+
+# Special rule for the target list_install_components
+list_install_components/fast: list_install_components
+.PHONY : list_install_components/fast
+
+# Special rule for the target install
+install: preinstall
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Install the project..."
+	/usr/local/bin/cmake -P cmake_install.cmake
+.PHONY : install
+
+# Special rule for the target install
+install/fast: preinstall/fast
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Install the project..."
+	/usr/local/bin/cmake -P cmake_install.cmake
+.PHONY : install/fast
+
+# Special rule for the target install/local
+install/local: preinstall
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Installing only the local directory..."
+	/usr/local/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
+.PHONY : install/local
+
+# Special rule for the target install/local
+install/local/fast: preinstall/fast
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Installing only the local directory..."
+	/usr/local/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
+.PHONY : install/local/fast
+
+# Special rule for the target install/strip
+install/strip: preinstall
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Installing the project stripped..."
+	/usr/local/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
+.PHONY : install/strip
+
+# Special rule for the target install/strip
+install/strip/fast: preinstall/fast
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Installing the project stripped..."
+	/usr/local/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
+.PHONY : install/strip/fast
+
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /circ330/forgithub/VisualFusion_libtorch/tensorRT_nx/build/CMakeFiles /circ330/forgithub/VisualFusion_libtorch/tensorRT_nx/build//CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /circ330/forgithub/newVerVF/VisualFusion_libtorch/tensorRT_nx/build/CMakeFiles /circ330/forgithub/newVerVF/VisualFusion_libtorch/tensorRT_nx/build//CMakeFiles/progress.marks
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /circ330/forgithub/VisualFusion_libtorch/tensorRT_nx/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /circ330/forgithub/newVerVF/VisualFusion_libtorch/tensorRT_nx/build/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -129,126 +174,6 @@ out/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/out.dir/build.make CMakeFiles/out.dir/build
 .PHONY : out/fast
 
-lib_image_fusion/src/core_image_align_tensorrt.o: lib_image_fusion/src/core_image_align_tensorrt.cpp.o
-.PHONY : lib_image_fusion/src/core_image_align_tensorrt.o
-
-# target to build an object file
-lib_image_fusion/src/core_image_align_tensorrt.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/out.dir/build.make CMakeFiles/out.dir/lib_image_fusion/src/core_image_align_tensorrt.cpp.o
-.PHONY : lib_image_fusion/src/core_image_align_tensorrt.cpp.o
-
-lib_image_fusion/src/core_image_align_tensorrt.i: lib_image_fusion/src/core_image_align_tensorrt.cpp.i
-.PHONY : lib_image_fusion/src/core_image_align_tensorrt.i
-
-# target to preprocess a source file
-lib_image_fusion/src/core_image_align_tensorrt.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/out.dir/build.make CMakeFiles/out.dir/lib_image_fusion/src/core_image_align_tensorrt.cpp.i
-.PHONY : lib_image_fusion/src/core_image_align_tensorrt.cpp.i
-
-lib_image_fusion/src/core_image_align_tensorrt.s: lib_image_fusion/src/core_image_align_tensorrt.cpp.s
-.PHONY : lib_image_fusion/src/core_image_align_tensorrt.s
-
-# target to generate assembly for a file
-lib_image_fusion/src/core_image_align_tensorrt.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/out.dir/build.make CMakeFiles/out.dir/lib_image_fusion/src/core_image_align_tensorrt.cpp.s
-.PHONY : lib_image_fusion/src/core_image_align_tensorrt.cpp.s
-
-lib_image_fusion/src/core_image_fusion.o: lib_image_fusion/src/core_image_fusion.cpp.o
-.PHONY : lib_image_fusion/src/core_image_fusion.o
-
-# target to build an object file
-lib_image_fusion/src/core_image_fusion.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/out.dir/build.make CMakeFiles/out.dir/lib_image_fusion/src/core_image_fusion.cpp.o
-.PHONY : lib_image_fusion/src/core_image_fusion.cpp.o
-
-lib_image_fusion/src/core_image_fusion.i: lib_image_fusion/src/core_image_fusion.cpp.i
-.PHONY : lib_image_fusion/src/core_image_fusion.i
-
-# target to preprocess a source file
-lib_image_fusion/src/core_image_fusion.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/out.dir/build.make CMakeFiles/out.dir/lib_image_fusion/src/core_image_fusion.cpp.i
-.PHONY : lib_image_fusion/src/core_image_fusion.cpp.i
-
-lib_image_fusion/src/core_image_fusion.s: lib_image_fusion/src/core_image_fusion.cpp.s
-.PHONY : lib_image_fusion/src/core_image_fusion.s
-
-# target to generate assembly for a file
-lib_image_fusion/src/core_image_fusion.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/out.dir/build.make CMakeFiles/out.dir/lib_image_fusion/src/core_image_fusion.cpp.s
-.PHONY : lib_image_fusion/src/core_image_fusion.cpp.s
-
-lib_image_fusion/src/core_image_perspective.o: lib_image_fusion/src/core_image_perspective.cpp.o
-.PHONY : lib_image_fusion/src/core_image_perspective.o
-
-# target to build an object file
-lib_image_fusion/src/core_image_perspective.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/out.dir/build.make CMakeFiles/out.dir/lib_image_fusion/src/core_image_perspective.cpp.o
-.PHONY : lib_image_fusion/src/core_image_perspective.cpp.o
-
-lib_image_fusion/src/core_image_perspective.i: lib_image_fusion/src/core_image_perspective.cpp.i
-.PHONY : lib_image_fusion/src/core_image_perspective.i
-
-# target to preprocess a source file
-lib_image_fusion/src/core_image_perspective.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/out.dir/build.make CMakeFiles/out.dir/lib_image_fusion/src/core_image_perspective.cpp.i
-.PHONY : lib_image_fusion/src/core_image_perspective.cpp.i
-
-lib_image_fusion/src/core_image_perspective.s: lib_image_fusion/src/core_image_perspective.cpp.s
-.PHONY : lib_image_fusion/src/core_image_perspective.s
-
-# target to generate assembly for a file
-lib_image_fusion/src/core_image_perspective.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/out.dir/build.make CMakeFiles/out.dir/lib_image_fusion/src/core_image_perspective.cpp.s
-.PHONY : lib_image_fusion/src/core_image_perspective.cpp.s
-
-lib_image_fusion/src/core_image_resizer.o: lib_image_fusion/src/core_image_resizer.cpp.o
-.PHONY : lib_image_fusion/src/core_image_resizer.o
-
-# target to build an object file
-lib_image_fusion/src/core_image_resizer.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/out.dir/build.make CMakeFiles/out.dir/lib_image_fusion/src/core_image_resizer.cpp.o
-.PHONY : lib_image_fusion/src/core_image_resizer.cpp.o
-
-lib_image_fusion/src/core_image_resizer.i: lib_image_fusion/src/core_image_resizer.cpp.i
-.PHONY : lib_image_fusion/src/core_image_resizer.i
-
-# target to preprocess a source file
-lib_image_fusion/src/core_image_resizer.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/out.dir/build.make CMakeFiles/out.dir/lib_image_fusion/src/core_image_resizer.cpp.i
-.PHONY : lib_image_fusion/src/core_image_resizer.cpp.i
-
-lib_image_fusion/src/core_image_resizer.s: lib_image_fusion/src/core_image_resizer.cpp.s
-.PHONY : lib_image_fusion/src/core_image_resizer.s
-
-# target to generate assembly for a file
-lib_image_fusion/src/core_image_resizer.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/out.dir/build.make CMakeFiles/out.dir/lib_image_fusion/src/core_image_resizer.cpp.s
-.PHONY : lib_image_fusion/src/core_image_resizer.cpp.s
-
-lib_image_fusion/src/core_image_to_gray.o: lib_image_fusion/src/core_image_to_gray.cpp.o
-.PHONY : lib_image_fusion/src/core_image_to_gray.o
-
-# target to build an object file
-lib_image_fusion/src/core_image_to_gray.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/out.dir/build.make CMakeFiles/out.dir/lib_image_fusion/src/core_image_to_gray.cpp.o
-.PHONY : lib_image_fusion/src/core_image_to_gray.cpp.o
-
-lib_image_fusion/src/core_image_to_gray.i: lib_image_fusion/src/core_image_to_gray.cpp.i
-.PHONY : lib_image_fusion/src/core_image_to_gray.i
-
-# target to preprocess a source file
-lib_image_fusion/src/core_image_to_gray.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/out.dir/build.make CMakeFiles/out.dir/lib_image_fusion/src/core_image_to_gray.cpp.i
-.PHONY : lib_image_fusion/src/core_image_to_gray.cpp.i
-
-lib_image_fusion/src/core_image_to_gray.s: lib_image_fusion/src/core_image_to_gray.cpp.s
-.PHONY : lib_image_fusion/src/core_image_to_gray.s
-
-# target to generate assembly for a file
-lib_image_fusion/src/core_image_to_gray.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/out.dir/build.make CMakeFiles/out.dir/lib_image_fusion/src/core_image_to_gray.cpp.s
-.PHONY : lib_image_fusion/src/core_image_to_gray.cpp.s
-
 main.o: main.cpp.o
 .PHONY : main.o
 
@@ -273,30 +198,6 @@ main.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/out.dir/build.make CMakeFiles/out.dir/main.cpp.s
 .PHONY : main.cpp.s
 
-utils/src/util_timer.o: utils/src/util_timer.cpp.o
-.PHONY : utils/src/util_timer.o
-
-# target to build an object file
-utils/src/util_timer.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/out.dir/build.make CMakeFiles/out.dir/utils/src/util_timer.cpp.o
-.PHONY : utils/src/util_timer.cpp.o
-
-utils/src/util_timer.i: utils/src/util_timer.cpp.i
-.PHONY : utils/src/util_timer.i
-
-# target to preprocess a source file
-utils/src/util_timer.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/out.dir/build.make CMakeFiles/out.dir/utils/src/util_timer.cpp.i
-.PHONY : utils/src/util_timer.cpp.i
-
-utils/src/util_timer.s: utils/src/util_timer.cpp.s
-.PHONY : utils/src/util_timer.s
-
-# target to generate assembly for a file
-utils/src/util_timer.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/out.dir/build.make CMakeFiles/out.dir/utils/src/util_timer.cpp.s
-.PHONY : utils/src/util_timer.cpp.s
-
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -304,29 +205,15 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... edit_cache"
+	@echo "... install"
+	@echo "... install/local"
+	@echo "... install/strip"
+	@echo "... list_install_components"
 	@echo "... rebuild_cache"
 	@echo "... out"
-	@echo "... lib_image_fusion/src/core_image_align_tensorrt.o"
-	@echo "... lib_image_fusion/src/core_image_align_tensorrt.i"
-	@echo "... lib_image_fusion/src/core_image_align_tensorrt.s"
-	@echo "... lib_image_fusion/src/core_image_fusion.o"
-	@echo "... lib_image_fusion/src/core_image_fusion.i"
-	@echo "... lib_image_fusion/src/core_image_fusion.s"
-	@echo "... lib_image_fusion/src/core_image_perspective.o"
-	@echo "... lib_image_fusion/src/core_image_perspective.i"
-	@echo "... lib_image_fusion/src/core_image_perspective.s"
-	@echo "... lib_image_fusion/src/core_image_resizer.o"
-	@echo "... lib_image_fusion/src/core_image_resizer.i"
-	@echo "... lib_image_fusion/src/core_image_resizer.s"
-	@echo "... lib_image_fusion/src/core_image_to_gray.o"
-	@echo "... lib_image_fusion/src/core_image_to_gray.i"
-	@echo "... lib_image_fusion/src/core_image_to_gray.s"
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"
-	@echo "... utils/src/util_timer.o"
-	@echo "... utils/src/util_timer.i"
-	@echo "... utils/src/util_timer.s"
 .PHONY : help
 
 
