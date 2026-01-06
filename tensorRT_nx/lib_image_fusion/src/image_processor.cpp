@@ -209,26 +209,46 @@ bool ImageProcessor::processImage(const std::string& eo_path,
     cv::resize(eo, eo_resized, cv::Size(out_w, out_h), 0, 0, cv::INTER_AREA);
     cv::resize(ir, ir_resized, cv::Size(out_w, out_h), 0, 0, cv::INTER_AREA);
     
-    // 轉灰階
-    cv::Mat gray_eo, gray_ir;
-    cv::cvtColor(eo_resized, gray_eo, cv::COLOR_BGR2GRAY);
-    cv::cvtColor(ir_resized, gray_ir, cv::COLOR_BGR2GRAY);
-    
     // 設定圖片名稱
     std::string img_name = utils::extractBaseName(eo_path);
-    image_align_->set_current_image_name(img_name);
     
-    // 對齊
-    std::vector<cv::Point2i> eo_pts, ir_pts;
     cv::Mat M;
-    image_align_->align(gray_eo, gray_ir, eo_pts, ir_pts, M);
+    std::vector<cv::Point2i> eo_pts, ir_pts;
     
-    std::cout << "    Found " << eo_pts.size() << " feature points" << std::endl;
-    
-    // RANSAC 優化
-    M = utils::refineHomographyWithRANSAC(eo_pts, ir_pts, M, 6.0);
-    if (M.empty()) {
-        M = cv::Mat::eye(3, 3, CV_64F);
+    if (config_.use_model_prediction) {
+        // 模式一：使用 model 預測 homography
+        std::cout << "  [MODE] Using model prediction" << std::endl;
+        
+        // 轉灰階
+        cv::Mat gray_eo, gray_ir;
+        cv::cvtColor(eo_resized, gray_eo, cv::COLOR_BGR2GRAY);
+        cv::cvtColor(ir_resized, gray_ir, cv::COLOR_BGR2GRAY);
+        
+        image_align_->set_current_image_name(img_name);
+        
+        // 對齊
+        image_align_->align(gray_eo, gray_ir, eo_pts, ir_pts, M);
+        
+        std::cout << "    Found " << eo_pts.size() << " feature points" << std::endl;
+        
+        // RANSAC 優化
+        M = utils::refineHomographyWithRANSAC(eo_pts, ir_pts, M, 6.0);
+        if (M.empty()) {
+            M = cv::Mat::eye(3, 3, CV_64F);
+        }
+        
+        // 儲存 homography 到快取 (覆蓋模式，單一檔案)
+        utils::saveHomographyToCache(config_.homo_cache_file, M);
+        
+    } else {
+        // 模式二：從快取載入 homography
+        std::cout << "  [MODE] Loading homography from cache" << std::endl;
+        
+        M = utils::loadHomographyFromCache(config_.homo_cache_file);
+        if (M.empty()) {
+            std::cerr << "  [ERROR] Failed to load homography from cache, using identity matrix" << std::endl;
+            M = cv::Mat::eye(3, 3, CV_64F);
+        }
     }
     
     // Warp EO
@@ -248,13 +268,15 @@ bool ImageProcessor::processImage(const std::string& eo_path,
         std::cout << "Saved to: " << save_path << ".jpg" << std::endl;
     }
     
-    // 計算誤差 (如果有 GT)
-    cv::Mat gt_homo = utils::readGTHomography(config_.gt_homo_base_path, img_name);
-    if (!gt_homo.empty() && !eo_pts.empty()) {
-        double mse = utils::calcFeaturePointMSE(M, gt_homo, eo_pts);
-        std::cout << "    MSE Error: " << mse << " px^2" << std::endl;
-        
-        utils::writeErrorToCSV("image_homo_errors.csv", img_name, mse);
+    // 計算誤差 (如果有 GT 且使用 model 預測)
+    if (config_.use_model_prediction) {
+        cv::Mat gt_homo = utils::readGTHomography(config_.gt_homo_base_path, img_name);
+        if (!gt_homo.empty() && !eo_pts.empty()) {
+            double mse = utils::calcFeaturePointMSE(M, gt_homo, eo_pts);
+            std::cout << "    MSE Error: " << mse << " px^2" << std::endl;
+            
+            utils::writeErrorToCSV("image_homo_errors.csv", img_name, mse);
+        }
     }
     
     return true;
@@ -287,12 +309,14 @@ bool ImageProcessor::processVideo(const std::string& eo_path,
     std::cout << "  - IR: " << fps_ir << " fps" << std::endl;
     std::cout << "  - EO: " << fps_eo << " fps" << std::endl;
     std::cout << "  - Rate: " << frame_rate << std::endl;
+    std::cout << "  - Use Model Prediction: " << (config_.use_model_prediction ? "true" : "false") << std::endl;
     
     // 創建輸出影片
     cv::VideoWriter writer;
     if (config_.output_enabled) {
+        std::string mode_suffix = config_.use_model_prediction ? "_model" : "_cache";
         std::string output_filename = save_path + "_" + 
-            std::to_string(config_.compute_per_frame) + "_fusion.mp4";
+            std::to_string(config_.compute_per_frame) + mode_suffix + "_fusion.mp4";
         writer.open(output_filename, cv::VideoWriter::fourcc('a', 'v', 'c', '1'),
                     fps_ir, cv::Size(out_w * 5, out_h));
     }
@@ -341,7 +365,25 @@ bool ImageProcessor::processVideo(const std::string& eo_path,
         
         // 計算 homography (根據頻率)
         if (cnt % config_.compute_per_frame == 0) {
-            M = computeHomography(img_eo, img_ir, eo_pts, ir_pts, cnt);
+            if (config_.use_model_prediction) {
+                // 模式一：使用 model 預測 homography
+                M = computeHomography(img_eo, img_ir, eo_pts, ir_pts, cnt);
+                
+                // 儲存 homography 到快取 (覆蓋模式，單一檔案)
+                utils::saveHomographyToCache(config_.homo_cache_file, M);
+            } else {
+                // 模式二：從快取載入 homography
+                cv::Mat cached_H = utils::loadHomographyFromCache(config_.homo_cache_file);
+                if (!cached_H.empty()) {
+                    M = homo_manager_.update(cached_H);
+                } else {
+                    std::cerr << "  [WARNING] Frame " << cnt << ": Cache not found, using previous" << std::endl;
+                    M = homo_manager_.getCurrent();
+                    if (M.empty()) {
+                        M = cv::Mat::eye(3, 3, CV_64F);
+                    }
+                }
+            }
         } else {
             M = homo_manager_.getCurrent();
             if (M.empty()) {
@@ -363,8 +405,8 @@ bool ImageProcessor::processVideo(const std::string& eo_path,
             writer.write(output);
         }
         
-        // 計算誤差 (如果有 GT 且有特徵點)
-        if (!eo_pts.empty()) {
+        // 計算誤差 (如果有 GT 且有特徵點 且使用 model 預測)
+        if (config_.use_model_prediction && !eo_pts.empty()) {
             cv::Mat gt_homo = utils::readGTHomographyForFrame(video_name, cnt, 
                                                               config_.gt_video_base_path);
             if (!gt_homo.empty()) {

@@ -6,6 +6,9 @@
     "device": "cuda",
     "pred_mode": "fp32",
     "model_path": "/circ330/forgithub/VisualFusion_libtorch/tensorRT_nx/model/NX/trt_Nx_fp32.engine",
+    
+    "use_model_prediction": false,
+    "homo_cache_file": "./homo_cache/current_homo.json",
 
     "VideoCut":true,
     "Vcut_x": 870,

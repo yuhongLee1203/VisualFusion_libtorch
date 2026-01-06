@@ -70,6 +70,10 @@ public:
     // skip frames
     nlohmann::json skip_frames_config;
     
+    // Homography 快取模式 - 新增
+    bool use_model_prediction;       // true: 使用 model 預測 homo，false: 從檔案讀取
+    std::string homo_cache_file;     // Homography 快取檔案路徑 (單一檔案)
+    
     /**
      * @brief 從檔案載入配置
      * @param config_path 配置檔案路徑

@@ -154,6 +154,30 @@ cv::Mat combineImagesHorizontal(const std::vector<cv::Mat>& images);
 void writeErrorToCSV(const std::string& filename, const std::string& name,
                      double error, const std::vector<std::pair<std::string, std::string>>& extra_cols = {});
 
+// ====== Homography 快取功能 (單一檔案模式) ======
+
+/**
+ * @brief 儲存 homography 矩陣到檔案 (覆蓋模式，永遠只有一個檔案)
+ * @param cache_file_path 快取檔案完整路徑
+ * @param H Homography 矩陣
+ * @return 是否成功
+ */
+bool saveHomographyToCache(const std::string& cache_file_path, const cv::Mat& H);
+
+/**
+ * @brief 從快取載入 homography 矩陣
+ * @param cache_file_path 快取檔案完整路徑
+ * @return Homography 矩陣 (空矩陣表示失敗)
+ */
+cv::Mat loadHomographyFromCache(const std::string& cache_file_path);
+
+/**
+ * @brief 檢查快取是否存在
+ * @param cache_file_path 快取檔案完整路徑
+ * @return 是否存在
+ */
+bool isHomographyCacheExists(const std::string& cache_file_path);
+
 } // namespace utils
 } // namespace core
 

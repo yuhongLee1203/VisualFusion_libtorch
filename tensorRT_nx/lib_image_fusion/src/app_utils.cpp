@@ -334,5 +334,75 @@ void writeErrorToCSV(const std::string& filename, const std::string& name,
     csv_file.close();
 }
 
+// ====== Homography 快取功能實作 (單一檔案模式) ======
+
+bool saveHomographyToCache(const std::string& cache_file_path, const cv::Mat& H) {
+    if (H.empty()) {
+        return false;
+    }
+    
+    // 確保快取目錄存在
+    std::filesystem::path p(cache_file_path);
+    if (p.has_parent_path() && !std::filesystem::exists(p.parent_path())) {
+        std::filesystem::create_directories(p.parent_path());
+    }
+    
+    try {
+        nlohmann::json j;
+        nlohmann::json h_array = nlohmann::json::array();
+        
+        for (int i = 0; i < 3; i++) {
+            nlohmann::json row = nlohmann::json::array();
+            for (int k = 0; k < 3; k++) {
+                row.push_back(H.at<double>(i, k));
+            }
+            h_array.push_back(row);
+        }
+        
+        j["H"] = h_array;
+        
+        std::ofstream file(cache_file_path);
+        file << j.dump(4);
+        file.close();
+        
+        std::cout << "  [CACHE] Updated homography: " << cache_file_path << std::endl;
+        return true;
+    } catch (const std::exception& e) {
+        std::cerr << "  [CACHE ERROR] Failed to save homography: " << e.what() << std::endl;
+        return false;
+    }
+}
+
+cv::Mat loadHomographyFromCache(const std::string& cache_file_path) {
+    if (!std::filesystem::exists(cache_file_path)) {
+        std::cerr << "  [CACHE] Homography cache not found: " << cache_file_path << std::endl;
+        return cv::Mat();
+    }
+    
+    try {
+        std::ifstream file(cache_file_path);
+        nlohmann::json j;
+        file >> j;
+        
+        cv::Mat H = cv::Mat::eye(3, 3, CV_64F);
+        auto h_array = j["H"];
+        for (int i = 0; i < 3; i++) {
+            for (int k = 0; k < 3; k++) {
+                H.at<double>(i, k) = h_array[i][k];
+            }
+        }
+        
+        std::cout << "  [CACHE] Loaded homography from: " << cache_file_path << std::endl;
+        return H;
+    } catch (const std::exception& e) {
+        std::cerr << "  [CACHE ERROR] Failed to load homography: " << e.what() << std::endl;
+        return cv::Mat();
+    }
+}
+
+bool isHomographyCacheExists(const std::string& cache_file_path) {
+    return std::filesystem::exists(cache_file_path);
+}
+
 } // namespace utils
 } // namespace core

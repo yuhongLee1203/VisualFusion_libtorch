@@ -52,6 +52,10 @@ void AppConfig::initDefaults(nlohmann::json& config) {
     
     config.emplace("gt_homo_base_path", "/circ330/HomoLabels320240/Version3");
     config.emplace("gt_video_base_path", "/circ330/HomoLabels2023_990");
+    
+    // Homography 快取模式 - 新增
+    config.emplace("use_model_prediction", true);
+    config.emplace("homo_cache_file", "./current_homo.json");
 }
 
 void AppConfig::parseFromJson(const nlohmann::json& config) {
@@ -123,6 +127,10 @@ void AppConfig::parseFromJson(const nlohmann::json& config) {
     
     // skip frames
     skip_frames_config = config["skip_frames"];
+    
+    // Homography 快取模式 - 新增
+    use_model_prediction = config["use_model_prediction"];
+    homo_cache_file = config["homo_cache_file"];
 }
 
 bool AppConfig::load(const std::string& config_path) {
@@ -166,6 +174,8 @@ void AppConfig::show() const {
     std::cout << "\tSmooth Max Rotation Diff: " << smooth_max_rotation_diff << std::endl;
     std::cout << "\tSmooth Alpha: " << smooth_alpha << std::endl;
     std::cout << "\tCompute Per Frame: " << compute_per_frame << std::endl;
+    std::cout << "\tUse Model Prediction: " << (use_model_prediction ? "true" : "false") << std::endl;
+    std::cout << "\tHomo Cache File: " << homo_cache_file << std::endl;
 }
 
 bool AppConfig::validate() const {
