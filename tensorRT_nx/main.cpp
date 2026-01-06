@@ -3,9 +3,7 @@
 #include <iostream>
 #include <filesystem>
 #include <string>
-
 #include "utils/src/util_timer.cpp"
-
 #include "lib_image_fusion/src/core_image_align_tensorrt.cpp"
 #include "lib_image_fusion/src/core_image_fusion_trt.cpp"
 #include "lib_image_fusion/src/app_config.cpp"
