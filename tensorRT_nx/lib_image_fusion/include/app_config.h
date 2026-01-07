@@ -74,6 +74,11 @@ public:
     bool use_model_prediction;       // true: 使用 model 預測 homo，false: 從檔案讀取
     std::string homo_cache_file;     // Homography 快取檔案路徑 (單一檔案)
     
+    // Pipeline 控制參數 - 新增
+    int align_start_frame;           // 開始執行 align 的幀數
+    int align_stop_frame;            // 停止執行 align 的幀數 (-1 表示永不停止)
+    bool align_on_first_frame;       // 是否在第一幀強制執行 align
+    
     /**
      * @brief 從檔案載入配置
      * @param config_path 配置檔案路徑

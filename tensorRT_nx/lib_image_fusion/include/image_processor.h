@@ -77,7 +77,19 @@ private:
     Timer timer_fusion_;
     Timer timer_edge_;
     
+    // Pipeline 狀態
+    bool align_enabled_;              // 當前是否啟用 align
+    bool first_valid_homo_acquired_;  // 是否已獲取第一個有效的 homography
+    
     // 私有方法
+    
+    /**
+     * @brief 判斷當前幀是否需要執行 align
+     * @param frame_cnt 當前幀數
+     * @param is_first_frame 是否為第一幀
+     * @return 是否需要執行 align
+     */
+    bool shouldExecuteAlign(int frame_cnt, bool is_first_frame);
     
     /**
      * @brief 執行融合

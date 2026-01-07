@@ -13,7 +13,9 @@ ImageProcessor::ImageProcessor(const AppConfig& config)
     , timer_align_("Align")
     , timer_homo_("Homo")
     , timer_fusion_("Fusion")
-    , timer_edge_("Edge") {
+    , timer_edge_("Edge")
+    , align_enabled_(true)
+    , first_valid_homo_acquired_(false) {
 }
 
 bool ImageProcessor::initialize() {
@@ -309,31 +311,50 @@ bool ImageProcessor::processVideo(const std::string& eo_path,
     std::cout << "  - IR: " << fps_ir << " fps" << std::endl;
     std::cout << "  - EO: " << fps_eo << " fps" << std::endl;
     std::cout << "  - Rate: " << frame_rate << std::endl;
+    
+    // ===== Pipeline 控制資訊 =====
+    std::cout << "\n  [Pipeline Config]" << std::endl;
     std::cout << "  - Use Model Prediction: " << (config_.use_model_prediction ? "true" : "false") << std::endl;
+    std::cout << "  - Align Start Frame: " << config_.align_start_frame << std::endl;
+    std::cout << "  - Align Stop Frame: " << config_.align_stop_frame << " (-1 = never stop)" << std::endl;
+    std::cout << "  - Align on First Frame: " << (config_.align_on_first_frame ? "true" : "false") << std::endl;
+    std::cout << "  - Compute Per Frame: " << config_.compute_per_frame << std::endl;
     
     // 創建輸出影片
     cv::VideoWriter writer;
     if (config_.output_enabled) {
-        std::string mode_suffix = config_.use_model_prediction ? "_model" : "_cache";
-        std::string output_filename = save_path + "_" + 
-            std::to_string(config_.compute_per_frame) + mode_suffix + "_fusion.mp4";
+        std::string mode_suffix = config_.use_model_prediction ? "_align" : "_fusion_only";
+        std::string output_filename = save_path + mode_suffix + ".mp4";
         writer.open(output_filename, cv::VideoWriter::fourcc('a', 'v', 'c', '1'),
                     fps_ir, cv::Size(out_w * 5, out_h));
+        std::cout << "  - Output: " << output_filename << std::endl;
     }
     
-    // 重置 homography 管理器
+    // 重置 homography 管理器和 pipeline 狀態
     homo_manager_.reset();
     homo_manager_.setParameters(config_.smooth_max_translation_diff,
                                 config_.smooth_max_rotation_diff,
                                 config_.smooth_alpha);
+    first_valid_homo_acquired_ = false;
+    
+    // 嘗試載入快取的 homography (如果存在)
+    cv::Mat cached_homo = utils::loadHomographyFromCache(config_.homo_cache_file);
+    if (!cached_homo.empty()) {
+        homo_manager_.update(cached_homo);
+        first_valid_homo_acquired_ = true;
+        std::cout << "  [INIT] Loaded initial homography from cache" << std::endl;
+    }
     
     // 處理幀
     cv::Mat eo, ir;
     cv::Mat M = cv::Mat::eye(3, 3, CV_64F);
     std::vector<cv::Point2i> eo_pts, ir_pts;
-    int cnt = 15;
+    int cnt = 0;
+    bool is_first_frame = true;
     
     std::string video_name = utils::extractFileName(eo_path);
+    
+    std::cout << "\n  [Processing Start]" << std::endl;
     
     while (true) {
         ir_cap.read(ir);
@@ -363,34 +384,41 @@ bool ImageProcessor::processVideo(const std::string& eo_path,
         cv::cvtColor(img_ir, gray_ir, cv::COLOR_BGR2GRAY);
         timer_gray_.stop();
         
-        // 計算 homography (根據頻率)
-        if (cnt % config_.compute_per_frame == 0) {
-            if (config_.use_model_prediction) {
-                // 模式一：使用 model 預測 homography
-                M = computeHomography(img_eo, img_ir, eo_pts, ir_pts, cnt);
-                
-                // 儲存 homography 到快取 (覆蓋模式，單一檔案)
-                utils::saveHomographyToCache(config_.homo_cache_file, M);
-            } else {
-                // 模式二：從快取載入 homography
+        // ===== Pipeline 控制邏輯 =====
+        // 判斷當前幀是否需要執行 align
+        bool execute_align = shouldExecuteAlign(cnt, is_first_frame);
+        
+        if (execute_align) {
+            // ===== Path A: Align 後 Fusion =====
+            std::cout << "  [Frame " << cnt << "] ALIGN + FUSION" << std::endl;
+            
+            // 執行 align (model 推論)
+            M = computeHomography(img_eo, img_ir, eo_pts, ir_pts, cnt);
+            
+            // 更新快取
+            utils::saveHomographyToCache(config_.homo_cache_file, M);
+            first_valid_homo_acquired_ = true;
+            
+        } else {
+            // ===== Path B: 單傳 Fusion (不執行 align) =====
+            std::cout << "  [Frame " << cnt << "] FUSION ONLY" << std::endl;
+            
+            // 使用現有的 homography
+            M = homo_manager_.getCurrent();
+            if (M.empty()) {
+                // 如果沒有有效的 homography，嘗試從快取載入
                 cv::Mat cached_H = utils::loadHomographyFromCache(config_.homo_cache_file);
                 if (!cached_H.empty()) {
                     M = homo_manager_.update(cached_H);
+                    first_valid_homo_acquired_ = true;
                 } else {
-                    std::cerr << "  [WARNING] Frame " << cnt << ": Cache not found, using previous" << std::endl;
-                    M = homo_manager_.getCurrent();
-                    if (M.empty()) {
-                        M = cv::Mat::eye(3, 3, CV_64F);
-                    }
+                    M = cv::Mat::eye(3, 3, CV_64F);
+                    std::cout << "    -> Using identity matrix (no valid homography)" << std::endl;
                 }
-            }
-        } else {
-            M = homo_manager_.getCurrent();
-            if (M.empty()) {
-                M = cv::Mat::eye(3, 3, CV_64F);
             }
         }
         
+        // ===== 共同處理：Warp + Fusion =====
         // Warp EO
         cv::Mat eo_warped = utils::warpWithHomography(img_eo, M, cv::Size(out_w, out_h));
         
@@ -405,8 +433,8 @@ bool ImageProcessor::processVideo(const std::string& eo_path,
             writer.write(output);
         }
         
-        // 計算誤差 (如果有 GT 且有特徵點 且使用 model 預測)
-        if (config_.use_model_prediction && !eo_pts.empty()) {
+        // 計算誤差 (如果有 GT 且有特徵點 且執行了 align)
+        if (execute_align && !eo_pts.empty()) {
             cv::Mat gt_homo = utils::readGTHomographyForFrame(video_name, cnt, 
                                                               config_.gt_video_base_path);
             if (!gt_homo.empty()) {
@@ -428,7 +456,10 @@ bool ImageProcessor::processVideo(const std::string& eo_path,
         }
         
         cnt++;
+        is_first_frame = false;
     }
+    
+    std::cout << "\n  [Processing Complete] Total frames: " << cnt << std::endl;
     
     // 釋放資源
     eo_cap.release();
@@ -447,6 +478,31 @@ void ImageProcessor::showTimerResults() {
     timer_homo_.show();
     timer_edge_.show();
     timer_fusion_.show();
+}
+
+bool ImageProcessor::shouldExecuteAlign(int frame_cnt, bool is_first_frame) {
+    // 如果 use_model_prediction 為 false，永不執行 align
+    if (!config_.use_model_prediction) {
+        return false;
+    }
+    
+    // 第一幀且設定要在第一幀執行
+    if (is_first_frame && config_.align_on_first_frame) {
+        return true;
+    }
+    
+    // 檢查是否在執行 align 的幀數範圍內
+    bool in_range = (frame_cnt >= config_.align_start_frame);
+    
+    // 如果設定了停止幀數 (非 -1)，檢查是否超過
+    if (config_.align_stop_frame >= 0 && frame_cnt > config_.align_stop_frame) {
+        in_range = false;
+    }
+    
+    // 還要符合 compute_per_frame 的頻率
+    bool is_compute_frame = (frame_cnt % config_.compute_per_frame == 0);
+    
+    return in_range && is_compute_frame;
 }
 
 } // namespace core

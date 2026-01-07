@@ -7,8 +7,11 @@
     "pred_mode": "fp32",
     "model_path": "/circ330/forgithub/VisualFusion_libtorch/tensorRT_nx/model/NX/trt_Nx_fp32.engine",
     
-    "use_model_prediction": false,
-    "homo_cache_file": "./homo_cache/current_homo.json",
+    "use_model_prediction": true,
+    "homo_cache_file": "./current_homo.json",
+    "align_start_frame": 0,
+    "align_stop_frame": 300,
+    "align_on_first_frame": true,
 
     "VideoCut":true,
     "Vcut_x": 870,
@@ -16,7 +19,7 @@
     "Vcut_w": 2020,
     "Vcut_h": 1680,
     
-    "compute_per_frame": 20,
+    "compute_per_frame": 5,
     
     "PictureCut":true,
     "Pcut_x":220,

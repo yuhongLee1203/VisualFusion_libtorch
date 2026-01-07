@@ -56,6 +56,11 @@ void AppConfig::initDefaults(nlohmann::json& config) {
     // Homography 快取模式 - 新增
     config.emplace("use_model_prediction", true);
     config.emplace("homo_cache_file", "./current_homo.json");
+    
+    // Pipeline 控制參數 - 新增
+    config.emplace("align_start_frame", 15);   // 從第 15 幀開始執行 align
+    config.emplace("align_stop_frame", -1);    // -1 表示永不停止，會一直執行
+    config.emplace("align_on_first_frame", true);  // 第一幀強制執行 align
 }
 
 void AppConfig::parseFromJson(const nlohmann::json& config) {
@@ -131,6 +136,11 @@ void AppConfig::parseFromJson(const nlohmann::json& config) {
     // Homography 快取模式 - 新增
     use_model_prediction = config["use_model_prediction"];
     homo_cache_file = config["homo_cache_file"];
+    
+    // Pipeline 控制參數 - 新增
+    align_start_frame = config["align_start_frame"];
+    align_stop_frame = config["align_stop_frame"];
+    align_on_first_frame = config["align_on_first_frame"];
 }
 
 bool AppConfig::load(const std::string& config_path) {
@@ -176,6 +186,9 @@ void AppConfig::show() const {
     std::cout << "\tCompute Per Frame: " << compute_per_frame << std::endl;
     std::cout << "\tUse Model Prediction: " << (use_model_prediction ? "true" : "false") << std::endl;
     std::cout << "\tHomo Cache File: " << homo_cache_file << std::endl;
+    std::cout << "\tAlign Start Frame: " << align_start_frame << std::endl;
+    std::cout << "\tAlign Stop Frame: " << align_stop_frame << " (-1 = never stop)" << std::endl;
+    std::cout << "\tAlign on First Frame: " << (align_on_first_frame ? "true" : "false") << std::endl;
 }
 
 bool AppConfig::validate() const {
