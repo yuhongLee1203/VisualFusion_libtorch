@@ -1,11 +1,13 @@
-#ifndef APP_UTILS_H
-#define APP_UTILS_H
+#ifndef APP_UTILS_H_
+#define APP_UTILS_H_
 
+#include <filesystem>
+#include <fstream>
 #include <string>
 #include <vector>
-#include <fstream>
-#include <filesystem>
+
 #include <opencv2/opencv.hpp>
+
 #include "nlohmann/json.hpp"
 
 namespace core {
@@ -26,21 +28,21 @@ void alert(const std::string& msg);
  * @param path 檔案路徑
  * @return 是否存在
  */
-bool isFileExist(const std::string& path);
+bool is_file_exist(const std::string& path);
 
 /**
  * @brief 檢查目錄是否存在
  * @param path 目錄路徑
  * @return 是否存在
  */
-bool isDirExist(const std::string& path);
+bool is_dir_exist(const std::string& path);
 
 /**
  * @brief 檢查檔案是否為影片
  * @param path 檔案路徑
  * @return 是否為影片
  */
-bool isVideo(const std::string& path);
+bool is_video(const std::string& path);
 
 /**
  * @brief 獲取配對的 EO/IR 檔案路徑
@@ -49,21 +51,23 @@ bool isVideo(const std::string& path);
  * @param ir_path 輸出 IR 路徑
  * @return 是否成功找到配對
  */
-bool getPairPaths(const std::string& path, std::string& eo_path, std::string& ir_path);
+bool get_pair_paths(const std::string& path,
+                    std::string& eo_path,
+                    std::string& ir_path);
 
 /**
  * @brief 從路徑提取檔案名稱（不含副檔名）
  * @param path 檔案路徑
  * @return 檔案名稱
  */
-std::string extractFileName(const std::string& path);
+std::string extract_file_name(const std::string& path);
 
 /**
  * @brief 從路徑提取基礎名稱（移除 _EO/_IR 和副檔名）
  * @param path 檔案路徑
  * @return 基礎名稱
  */
-std::string extractBaseName(const std::string& path);
+std::string extract_base_name(const std::string& path);
 
 /**
  * @brief 裁剪影像
@@ -74,7 +78,7 @@ std::string extractBaseName(const std::string& path);
  * @param h 高度 (-1 表示到邊界)
  * @return 裁剪後的影像
  */
-cv::Mat cropImage(const cv::Mat& src, int x, int y, int w, int h);
+cv::Mat crop_image(const cv::Mat& src, int x, int y, int w, int h);
 
 /**
  * @brief 跳過影片幀數
@@ -82,8 +86,9 @@ cv::Mat cropImage(const cv::Mat& src, int x, int y, int w, int h);
  * @param cap VideoCapture 物件
  * @param skip_frames_config 跳過配置
  */
-void skipFrames(const std::string& path, cv::VideoCapture& cap, 
-                const nlohmann::json& skip_frames_config);
+void skip_frames(const std::string& path,
+                 cv::VideoCapture& cap,
+                 const nlohmann::json& skip_frames_config);
 
 /**
  * @brief 讀取 GT homography (圖片模式)
@@ -91,7 +96,7 @@ void skipFrames(const std::string& path, cv::VideoCapture& cap,
  * @param img_name 圖片名稱
  * @return Homography 矩陣
  */
-cv::Mat readGTHomography(const std::string& gt_path, const std::string& img_name);
+cv::Mat read_gt_homography(const std::string& gt_path, const std::string& img_name);
 
 /**
  * @brief 讀取 GT homography (影片模式，根據幀數)
@@ -100,8 +105,9 @@ cv::Mat readGTHomography(const std::string& gt_path, const std::string& img_name
  * @param gt_base_path GT 基礎路徑
  * @return Homography 矩陣
  */
-cv::Mat readGTHomographyForFrame(const std::string& video_name, int frame_number,
-                                  const std::string& gt_base_path);
+cv::Mat read_gt_homography_for_frame(const std::string& video_name,
+                                     int frame_number,
+                                     const std::string& gt_base_path);
 
 /**
  * @brief 計算特徵點 MSE 誤差
@@ -110,8 +116,9 @@ cv::Mat readGTHomographyForFrame(const std::string& video_name, int frame_number
  * @param eo_pts EO 特徵點
  * @return MSE 誤差值
  */
-double calcFeaturePointMSE(const cv::Mat& homo_pred, const cv::Mat& homo_gt,
-                           const std::vector<cv::Point2i>& eo_pts);
+double calc_feature_point_mse(const cv::Mat& homo_pred,
+                              const cv::Mat& homo_gt,
+                              const std::vector<cv::Point2i>& eo_pts);
 
 /**
  * @brief 使用 RANSAC 優化 homography 並過濾離群點
@@ -121,10 +128,10 @@ double calcFeaturePointMSE(const cv::Mat& homo_pred, const cv::Mat& homo_gt,
  * @param ransac_threshold RANSAC 閾值
  * @return 優化後的 homography
  */
-cv::Mat refineHomographyWithRANSAC(std::vector<cv::Point2i>& eo_pts,
-                                    std::vector<cv::Point2i>& ir_pts,
-                                    const cv::Mat& initial_H,
-                                    double ransac_threshold = 6.0);
+cv::Mat refine_homography_with_ransac(std::vector<cv::Point2i>& eo_pts,
+                                      std::vector<cv::Point2i>& ir_pts,
+                                      const cv::Mat& initial_H,
+                                      double ransac_threshold = 6.0);
 
 /**
  * @brief 對影像應用 homography 變換
@@ -134,15 +141,17 @@ cv::Mat refineHomographyWithRANSAC(std::vector<cv::Point2i>& eo_pts,
  * @param interp 插值方式
  * @return 變換後的影像
  */
-cv::Mat warpWithHomography(const cv::Mat& src, const cv::Mat& M, 
-                           const cv::Size& size, int interp = cv::INTER_LINEAR);
+cv::Mat warp_with_homography(const cv::Mat& src,
+                             const cv::Mat& M,
+                             const cv::Size& size,
+                             int interp = cv::INTER_LINEAR);
 
 /**
  * @brief 組合多張影像成一行
  * @param images 影像列表
  * @return 組合後的影像
  */
-cv::Mat combineImagesHorizontal(const std::vector<cv::Mat>& images);
+cv::Mat combine_images_horizontal(const std::vector<cv::Mat>& images);
 
 /**
  * @brief 寫入誤差到 CSV
@@ -151,8 +160,11 @@ cv::Mat combineImagesHorizontal(const std::vector<cv::Mat>& images);
  * @param error 誤差值
  * @param extra_cols 額外欄位 (可選)
  */
-void writeErrorToCSV(const std::string& filename, const std::string& name,
-                     double error, const std::vector<std::pair<std::string, std::string>>& extra_cols = {});
+void write_error_to_csv(
+    const std::string& filename,
+    const std::string& name,
+    double error,
+    const std::vector<std::pair<std::string, std::string>>& extra_cols = {});
 
 // ====== Homography 快取功能 (單一檔案模式) ======
 
@@ -162,23 +174,23 @@ void writeErrorToCSV(const std::string& filename, const std::string& name,
  * @param H Homography 矩陣
  * @return 是否成功
  */
-bool saveHomographyToCache(const std::string& cache_file_path, const cv::Mat& H);
+bool save_homography_to_cache(const std::string& cache_file_path, const cv::Mat& H);
 
 /**
  * @brief 從快取載入 homography 矩陣
  * @param cache_file_path 快取檔案完整路徑
  * @return Homography 矩陣 (空矩陣表示失敗)
  */
-cv::Mat loadHomographyFromCache(const std::string& cache_file_path);
+cv::Mat load_homography_from_cache(const std::string& cache_file_path);
 
 /**
  * @brief 檢查快取是否存在
  * @param cache_file_path 快取檔案完整路徑
  * @return 是否存在
  */
-bool isHomographyCacheExists(const std::string& cache_file_path);
+bool is_homography_cache_exists(const std::string& cache_file_path);
 
-} // namespace utils
-} // namespace core
+}  // namespace utils
+}  // namespace core
 
-#endif // APP_UTILS_H
+#endif  // APP_UTILS_H_

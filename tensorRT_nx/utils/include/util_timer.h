@@ -1,34 +1,27 @@
-#ifndef INCLUDE_CORE_TIMER_H
-#define INCLUDE_CORE_TIMER_H
+#ifndef INCLUDE_CORE_TIMER_H_
+#define INCLUDE_CORE_TIMER_H_
 
-#include <iostream>
-
-#include <string>
 #include <chrono>
+#include <iostream>
+#include <string>
 
-namespace core
-{
+namespace core {
 
-  class Timer
-  {
-  public:
-    explicit Timer(std::string name);
+class Timer {
+ public:
+  explicit Timer(const std::string& name);
 
-    void start();
-    void stop();
-    void show();
+  void start();
+  void stop();
+  void show();
 
-    // void align(cv::Mat &eo, cv::Mat &ir, std::vector<cv::Point2i> &eo_pts, std::vector<cv::Point2i> &ir_pts, cv::Mat &H);
+ private:
+  std::string name_;
+  int count_ = 0;
+  double total_time_ = 0;
+  std::chrono::time_point<std::chrono::system_clock> start_time_;
+};
 
-  private:
-    std::string name;
+}  // namespace core
 
-    int count = 0;
-    double total_time = 0;
-
-    std::chrono::time_point<std::chrono::system_clock> start_time;
-  };
-
-} /* namespace core */
-
-#endif /* INCLUDE_CORE_IMAGE_ALIGN_H_ */
+#endif  // INCLUDE_CORE_TIMER_H_
