@@ -683,14 +683,6 @@ To train your own SemLA model:
    python export_to_jit_fp16.py  # or fp32
    ```
 
-### Multi-GPU Support
-
-Currently single-GPU only. For multi-GPU:
-
-1. Implement batch processing in `main.cpp`
-2. Use `torch::Device` array
-3. Distribute images across GPUs
-
 ### Real-time Video Processing
 
 For live video streams:
@@ -1259,7 +1251,6 @@ Contributions welcome! Areas of interest:
 - Performance optimizations (CUDA kernels, memory management)
 - Additional fusion algorithms
 - Documentation improvements
-- Multi-GPU support
 - Custom model training pipelines
 - Extended platform support (Jetson AGX, Xavier, etc.)
 
