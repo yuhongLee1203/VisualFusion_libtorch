@@ -1252,7 +1252,6 @@ Contributions welcome! Areas of interest:
 - Additional fusion algorithms
 - Documentation improvements
 - Custom model training pipelines
-- Extended platform support (Jetson AGX, Xavier, etc.)
 
 
 ## 🙏 Acknowledgments
