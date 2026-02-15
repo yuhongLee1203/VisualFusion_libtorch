@@ -1,4 +1,4 @@
-# VisualFusion LibTorch
+# VisualFusion (Please switch to the branch feature/cmake_deleteUselessCode to find the TensorRT_nx for new version.)
 
 🔥 **Real-Time EO-IR Image Alignment and Fusion System with Deep Learning**
 
@@ -44,42 +44,50 @@ VisualFusion LibTorch is a high-performance computer vision system for **EO-IR (
 
 ```
 VisualFusion/
-├── IR_Convert_v21_libtorch/    # LibTorch C++ implementation for PC (x86)
+├── tensorRT_nx/                 # TensorRT implementation for Jetson Orin NX (ARM64)
 │   ├── main.cpp                 # Main processing pipeline
+│   ├── CMakeLists.txt           # CMake build configuration
+│   ├── gcc.sh                   # Build script
+│   │
 │   ├── config/                  # Configuration files
 │   │   └── config.json          # Runtime configuration
+│   │
 │   ├── lib_image_fusion/        # Core computer vision libraries
 │   │   ├── include/             # Header files
+│   │   │   ├── app_config.h             # Configuration management
+│   │   │   ├── app_utils.h              # Utility functions
+│   │   │   ├── core_image_align_tensorrt.h   # TensorRT alignment
+│   │   │   ├── core_image_fusion_trt.h       # TensorRT fusion
+│   │   │   ├── homography_manager.h          # Homography smoothing
+│   │   │   └── image_processor.h             # Main processor
 │   │   └── src/                 # Implementation
-│   │       ├── core_image_align_libtorch.cpp  # LibTorch inference
-│   │       ├── core_image_fusion.cpp          # Image fusion algorithms
-│   │       ├── core_image_perspective.cpp     # Perspective transformation
-│   │       ├── core_image_resizer.cpp         # Image resizing
-│   │       └── core_image_to_gray.cpp         # Grayscale conversion
+│   │       ├── app_config.cpp              # Config loader
+│   │       ├── app_utils.cpp               # Utilities implementation
+│   │       ├── core_image_align_tensorrt.cpp   # TensorRT inference
+│   │       ├── core_image_fusion_trt.cpp       # GPU fusion
+│   │       ├── homography_manager.cpp          # Smoothing logic
+│   │       └── image_processor.cpp             # Processing pipeline
+│   │
+│   ├── utils/                   # Utility modules
+│   │   └── src/
+│   │       └── util_timer.cpp   # Performance timing
+│   │
 │   ├── model/                   # Model files
-│   │   ├── SemLA_fp16.zip       # FP16 TorchScript model
-│   │   └── SemLA_fp32.zip       # FP32 TorchScript model
-│   ├── utils/                   # Utility functions
+│   │   └── NX/                  # Jetson NX specific models
+│   │       ├── trt_Nx_fp16.engine     # FP16 alignment model
+│   │       ├── trt_Nx_fp32.engine     # FP32 alignment model
+│   │       ├── border_1_fusion.trt    # Fusion model (thin edge)
+│   │       └── border_4_fusion.trt    # Fusion model (thick edge)
+│   │
+│   ├── nlohmann/                # JSON library
 │   ├── build/                   # Build artifacts
-│   └── gcc.sh                   # Build script
+│   ├── output/                  # Output directory
+│   └── current_homo.json        # Cached homography
 │
-├── IR_Convert_v21_libtorch_nx/ # LibTorch C++ implementation for Jetson Orin NX (ARM64)
-│   ├── main.cpp                 # Main processing pipeline for NX
-│   └── ...                      # (Structure similar to x86 version)
-│
+├── IR_Convert_v21_libtorch/    # LibTorch C++ implementation for PC (x86)
+├── IR_Convert_v21_libtorch_nx/ # LibTorch C++ implementation for Jetson NX
 ├── Onnx/                        # ONNX Runtime implementation
-│   ├── main.cpp                 # ONNX Runtime pipeline
-│   ├── lib_image_fusion/        # Core libraries (similar structure)
-│   └── model/                   # ONNX models
-│
 ├── tensorRT/                    # TensorRT implementation for PC (x86)
-│   ├── main.cpp                 # TensorRT pipeline
-│   ├── lib_image_fusion/        # Core libraries
-│   └── model/                   # TensorRT engines
-│
-├── tensorRT_nx/                 # TensorRT implementation for Jetson Orin NX (ARM64)
-│   ├── main.cpp                 # TensorRT pipeline for NX
-│   └── ...                      # (Structure similar to x86 version)
 │
 └── convert_to_libtorch/         # Model conversion utilities
     ├── export_to_jit_fp16.py    # PyTorch → LibTorch FP16
@@ -158,33 +166,25 @@ pip install torch==1.13.1 torchvision torchaudio --index-url https://download.py
 pip install onnx onnxruntime-gpu==1.18.0 opencv-python numpy
 ```
 
-### 3. Build LibTorch Version
+### 3. Build TensorRT NX Version
 
 ```bash
-cd IR_Convert_v21_libtorch
+cd tensorRT_nx
 bash gcc.sh && ./build/out
 ```
 
 The build script will:
-- Download and setup LibTorch 1.13.1 (if not present)
-- Compile C++ source files
+- Configure TensorRT libraries for Jetson Orin NX
+- Compile C++ source files with CUDA support
+- Link against TensorRT, CUDA, and OpenCV libraries
 - Generate executable: `./build/out`
 
-### 4. Build ONNX Version (Optional)
+**Requirements**:
+- Jetson Orin NX with JetPack installed
+- TensorRT 10.3.x libraries
+- CUDA 12.6
+- cuDNN 9.3
 
-```bash
-cd Onnx
-bash gcc.sh && ./build/out
-```
-
-### 5. Build TensorRT Version (Optional)
-
-```bash
-cd tensorRT
-bash gcc.sh && ./build/out
-```
-
-**Note**: TensorRT version requires TensorRT 8.4.x libraries installed and in `LD_LIBRARY_PATH`.
 
 ## 📦 Model Conversion
 
@@ -420,7 +420,7 @@ All runtime parameters are configured via `config/config.json`:
 
 ## 🚀 Usage
 
-### LibTorch Version
+### TensorRT NX Version
 
 #### Prepare Input Data
 
@@ -435,10 +435,18 @@ input/
 ...
 ```
 
+Or video files:
+```
+input/
+├── video_001_EO.mp4
+├── video_001_IR.mp4
+...
+```
+
 #### Run Inference
 
 ```bash
-cd IR_Convert_v21_libtorch
+cd tensorRT_nx
 ./build/out 
 ```
 
@@ -448,28 +456,15 @@ Results are saved to the configured `output_dir`:
 
 ```
 output/
-├── scene_001_fusion.jpg    # Fused image
-├── scene_001_aligned.jpg   # Visualization with keypoints
-├── scene_002_fusion.jpg
-├── scene_002_aligned.jpg
+├── scene_001_EO.jpg    # Combined output (5 images: IR orig | EO orig | IR proc | EO warped | Fused)
+├── scene_002_EO.jpg
 ...
 ```
 
-### ONNX Runtime Version
-
-```bash
-cd Onnx
-./build/out 
-```
-
-### TensorRT Version
-
-```bash
-cd tensorRT
-./build/out 
-```
-
-**Note**: Ensure TensorRT engine (`.engine`) is pre-built before running. See [Model Conversion](#-model-conversion) section.
+CSV logs are also generated:
+- `image_homo_errors.csv` - Homography errors for images
+- `video_homo_errors.csv` - Homography errors for videos
+- `itiming_log.csv` - Performance timing logs
 
 ## 🔍 Processing Pipeline
 
@@ -688,14 +683,6 @@ To train your own SemLA model:
    python export_to_jit_fp16.py  # or fp32
    ```
 
-### Multi-GPU Support
-
-Currently single-GPU only. For multi-GPU:
-
-1. Implement batch processing in `main.cpp`
-2. Use `torch::Device` array
-3. Distribute images across GPUs
-
 ### Real-time Video Processing
 
 For live video streams:
@@ -709,65 +696,280 @@ For live video streams:
 
 ### C++ Core Classes
 
-#### `core::ImageAlign`
+#### `core::AppConfig`
+
+**Purpose**: Configuration management for loading and validating runtime parameters from JSON file.
 
 **Constructor**:
 ```cpp
-ImageAlign(Param param)
+AppConfig()  // Default constructor
 ```
 
 **Key Methods**:
 ```cpp
-void pred(cv::Mat &eo, cv::Mat &ir, 
-          std::vector<cv::Point2i> &eo_pts, 
-          std::vector<cv::Point2i> &ir_pts,
-          const std::string& filename);
+bool load(const std::string& config_path);
+void show() const;
+bool validate() const;
 ```
-- **Input**: EO and IR images (grayscale, 320×240)
-- **Output**: Corresponding keypoint vectors
-- **Side effects**: Loads model, performs inference
 
-#### `core::ImageFusion`
+**Key Members**:
+- **Input/Output**: `input_dir`, `output_dir`, `output_enabled`
+- **Image Size**: `pred_width`, `pred_height`, `output_width`, `output_height`
+- **Cropping**: `video_cut_enabled`, `vcut_x/y/w/h`, `picture_cut_enabled`, `pcut_x/y/w/h`
+- **Model**: `device`, `pred_mode`, `model_path`
+- **Fusion**: `use_trt_fusion`, `fusion_trt_engine`, `fusion_edge_border`
+- **Alignment**: `align_distance_last`, `align_angle_mean`, `align_angle_sort`
+- **Smoothing**: `smooth_max_translation_diff`, `smooth_max_rotation_diff`, `smooth_alpha`
+- **Pipeline**: `align_start_frame`, `align_stop_frame`, `align_on_first_frame`
 
-**Key Methods**:
+---
+
+#### `core::ImageAlignTensorRT`
+
+**Purpose**: TensorRT-based feature matching and homography estimation using SemLA model.
+
+**Constructor**:
 ```cpp
-cv::Mat fusion(cv::Mat &bg, cv::Mat &fg, 
-               cv::Mat &bg_edge, cv::Mat &fg_edge);
+static std::shared_ptr<ImageAlignTensorRT> create_instance(const Param& param);
 ```
-- **Input**: Background, foreground images + edge maps
-- **Output**: Fused image
-- **Features**: Shadow enhancement, edge-aware blending
 
-### Configuration Structure
-
+**Param Structure**:
 ```cpp
-struct Config {
-    std::string input_dir;
-    std::string output_dir;
-    bool output;
-    std::string device;
-    std::string pred_mode;
-    std::string model_path;
-    int pred_width, pred_height;
-    int output_width, output_height;
-    // ... (see config.json for full list)
+struct Param {
+    int pred_width = 320;
+    int pred_height = 240;
+    std::string engine_path;
+    std::string pred_mode = "fp32";  // "fp16" or "fp32"
+    
+    Param& set_size(int pw, int ph, int ow, int oh);
+    Param& set_engine(const std::string& path);
+    Param& set_pred_mode(const std::string& mode);
 };
 ```
+
+**Key Methods**:
+```cpp
+void align(const cv::Mat& eo, const cv::Mat& ir,
+           std::vector<cv::Point2i>& eo_pts,
+           std::vector<cv::Point2i>& ir_pts,
+           cv::Mat& H);
+```
+- **Input**: EO and IR grayscale images (320×240, CV_8UC1)
+- **Output**: 
+  - `eo_pts`: Keypoints in EO image
+  - `ir_pts`: Corresponding keypoints in IR image
+  - `H`: Homography matrix (3×3)
+- **Features**: TensorRT inference, RANSAC homography computation
+
+```cpp
+void set_current_image_name(const std::string& image_name);
+```
+- Sets image name for logging purposes
+
+---
+
+#### `core::ImageFusionTRT`
+
+**Purpose**: GPU-accelerated image fusion using TensorRT.
+
+**Constructor**:
+```cpp
+ImageFusionTRT(Param param);
+static ptr create_instance(Param param);
+```
+
+**Param Structure**:
+```cpp
+struct Param {
+    std::string engine_path = "";
+    int width = 320;
+    int height = 240;
+    
+    Param& set_engine_path(const std::string& path);
+    Param& set_size(int w, int h);
+};
+```
+
+**Key Methods**:
+```cpp
+cv::Mat fusion(const cv::Mat& eo_gray, const cv::Mat& ir_color);
+```
+- **Input**: 
+  - `eo_gray`: Grayscale EO image (CV_8UC1)
+  - `ir_color`: Color IR image (CV_8UC3)
+- **Output**: Fused color image (CV_8UC3)
+- **Features**: Sobel edge detection, shadow enhancement, GPU processing
+
+```cpp
+cv::Mat edge(const cv::Mat& eo_gray);
+```
+- **Input**: Grayscale EO image
+- **Output**: Edge map
+- **Note**: Edge detection only (no fusion)
+
+```cpp
+bool is_initialized() const;
+```
+- Returns initialization status
+
+---
+
+#### `core::HomographyManager`
+
+**Purpose**: Temporal smoothing and validation of homography matrices for video sequences.
+
+**Constructor**:
+```cpp
+HomographyManager(double max_trans_diff = 30.0,
+                  double max_rot_diff = 0.03,
+                  double alpha = 0.05);
+```
+
+**Key Methods**:
+```cpp
+cv::Mat update(const cv::Mat& new_homo);
+```
+- **Input**: New homography matrix
+- **Output**: Smoothed homography (weighted average with previous)
+- **Algorithm**: 
+  - Checks translation/rotation difference
+  - Falls back to previous if jump too large
+  - Otherwise applies: `H_smooth = alpha * H_new + (1-alpha) * H_prev`
+
+```cpp
+std::pair<double, double> calculate_difference(const cv::Mat& homo1, 
+                                               const cv::Mat& homo2) const;
+```
+- **Input**: Two homography matrices
+- **Output**: `<translation_diff, rotation_diff>`
+
+```cpp
+cv::Mat get_current() const;
+void reset();
+void set_parameters(double max_trans_diff, double max_rot_diff, double alpha);
+```
+
+---
+
+#### `core::ImageProcessor`
+
+**Purpose**: Main processing pipeline for image/video fusion.
+
+**Constructor**:
+```cpp
+explicit ImageProcessor(const AppConfig& config);
+```
+
+**Key Methods**:
+```cpp
+bool initialize();
+```
+- Initializes TensorRT modules, homography manager, and timers
+- **Returns**: `true` if successful
+
+```cpp
+bool process_image(const std::string& eo_path,
+                   const std::string& ir_path,
+                   const std::string& save_path);
+```
+- **Input**: Paths to EO/IR image pair
+- **Output**: Saves combined result (5 images horizontal)
+- **Pipeline**: Load → Crop → Resize → Align → Warp → Fuse → Save
+- **Returns**: `true` if successful
+
+```cpp
+bool process_video(const std::string& eo_path,
+                   const std::string& ir_path,
+                   const std::string& save_path);
+```
+- **Input**: Paths to EO/IR video pair
+- **Output**: Saves video with fusion results
+- **Features**: Frame skipping, adaptive alignment, progress logging
+- **Returns**: `true` if successful
+
+```cpp
+void show_timer_results();
+```
+- Displays performance statistics (resize, align, fusion times)
+
+---
+
+### Utility Functions (`core::utils`)
+
+**File Operations**:
+```cpp
+bool is_file_exist(const std::string& path);
+bool is_dir_exist(const std::string& path);
+bool is_video(const std::string& path);
+bool get_pair_paths(const std::string& path, 
+                    std::string& eo_path, 
+                    std::string& ir_path);
+std::string extract_file_name(const std::string& path);
+std::string extract_base_name(const std::string& path);
+```
+
+**Image Processing**:
+```cpp
+cv::Mat crop_image(const cv::Mat& src, int x, int y, int w, int h);
+cv::Mat warp_with_homography(const cv::Mat& src, const cv::Mat& M, 
+                              const cv::Size& size, int interp = cv::INTER_LINEAR);
+cv::Mat combine_images_horizontal(const std::vector<cv::Mat>& images);
+```
+
+**Homography Operations**:
+```cpp
+cv::Mat refine_homography_with_ransac(std::vector<cv::Point2i>& eo_pts,
+                                      std::vector<cv::Point2i>& ir_pts,
+                                      const cv::Mat& initial_H,
+                                      double ransac_threshold = 6.0);
+```
+- **Input/Output**: Keypoint vectors (modified in-place, outliers removed)
+- **Returns**: Refined homography matrix
+
+```cpp
+bool save_homography_to_cache(const std::string& cache_file_path, const cv::Mat& H);
+cv::Mat load_homography_from_cache(const std::string& cache_file_path);
+bool is_homography_cache_exists(const std::string& cache_file_path);
+```
+
+**Error Calculation**:
+```cpp
+cv::Mat read_gt_homography(const std::string& gt_path, const std::string& img_name);
+cv::Mat read_gt_homography_for_frame(const std::string& video_name,
+                                     int frame_number,
+                                     const std::string& gt_base_path);
+double calc_feature_point_mse(const cv::Mat& homo_pred,
+                              const cv::Mat& homo_gt,
+                              const std::vector<cv::Point2i>& eo_pts);
+void write_error_to_csv(const std::string& filename,
+                        const std::string& name,
+                        double error,
+                        const std::vector<std::pair<std::string, std::string>>& extra_cols = {});
+```
+
+---
+
+### Timer (`util::Timer`)
+
+**Key Methods**:
+```cpp
+void start();
+void stop();
+void show() const;
+```
+- Tracks execution time with statistics (total, average, min, max, count)
 
 ## 🤝 Contributing
 
 Contributions welcome! Areas of interest:
 
-- [ ] Complete TensorRT integration
-- [ ] Multi-GPU support
-- [ ] Real-time video streaming
-- [ ] Performance optimizations
-- [ ] Additional fusion algorithms
-- [ ] Documentation improvements
+- Complete TensorRT integration for more platforms
+- Real-time video streaming support
+- Performance optimizations (CUDA kernels, memory management)
+- Additional fusion algorithms
+- Documentation improvements
+- Custom model training pipelines
 
-## 📄 License
-
-[Specify license here]
 
 ## 🙏 Acknowledgments
 
@@ -783,3 +985,4 @@ Contributions welcome! Areas of interest:
 <div align="center">
   <sub>Built with ❤️ for computer vision research and applications</sub>
 </div>
+
